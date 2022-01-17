@@ -31,24 +31,26 @@ Thinking about how to capture the WiSafe2 data directly, without the FireAngel C
 So rather than trying to communicate with the WiSafe2 network from an unsupported radio, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge. Letting the genuine radio module deal with the encryption and network pairing.
 
 With the radio on the bench, I used PulseView to intercept and analyse the communication between the radio and an alarm. I reverse-engineered everything that I could figure out. 
-Check here if you're interested in the communication specification. Maybe you have some inside knowledge and can add more detail to it? Or would like to investigate the concept of using a generic 868MHz transceiver further...
+Check here if you're interested in the details of communication specification. Maybe you have some inside knowledge and can add more detail to it? Or would like to investigate the concept of using a generic 868MHz transceiver further...
 
 [GitHub - WiSafeCommunicationAnalysis](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/WiSafeCommunicationAnalysis)
 
 ![On the bench](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/reverse-engineering%20wi-safe2%20radio%202.jpg)
 
-At this point, I considered the safety and reliability of a DIY approach. As should you.
-The primary function of the alarms is to work as designed locally, and the 'smart' connection is always just a 'nice-to-have'. This solution does not modify the alarms, but it is of course provided without any warranty or support. And I am not responsible if you damage anything, or if doesn't work the way you expected it to.
-That said, with FireAngel's commercial solution being such a disaster, they have set the bar very low.
+Once I'd figured all the important parts of the communication out, I built a driver for the radio, to allow us to communicate with it over USB. 
 
-With this solution, if it's all working properly, you'll have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's solution doesn't offer. Yes; all the alarms beep. But they don't tell you where the problem originated from.
-
+![Prototype](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/my%20gateway.jpg)
 
 
 ## About This Project
 
 ![HA LoveLace](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA-lovelace.png)
 
+At this point, I considered the safety and reliability of a DIY approach. As should you.
+The primary function of the alarms is to work as designed locally, and the 'smart' connection is always just a 'nice-to-have'. This solution does not modify the alarms, but it is of course provided without any warranty or support. And I am not responsible if you damage anything, or if doesn't work the way you expected it to.
+That said, with FireAngel's commercial solution being such a disaster, they have set the bar very low (last rant about the gateway, I promise).
+
+With this solution, if it's all working properly, you'll have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's solution doesn't offer. Yes; all the alarms beep. But they don't tell you where the problem originated from.
 
 I'll explain how I used a WiSafe2 radio module, along with an Arduino Nano, to bridge my network of FireAngel WiSafe2 alarms into HomeAssistant.
 Using this method, the alarms are all unmodified and all communication is local.
@@ -108,8 +110,8 @@ Just a regular Arduino Nano (or clone). Make sure it is 5v @ 16MHz.
 
 The PCB:
 
-![PCB design](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb01.png
-![PCB board](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb02.png
+![PCB design](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb01.png)
+![PCB board](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb02.png)
 
 Here's a link to the PCB I made for this:
 * [JSON file (for loading into easy-EDA):](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/WiSafe2HA-bridge-PCB.json)
