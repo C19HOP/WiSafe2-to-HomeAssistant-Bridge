@@ -1,0 +1,100 @@
+title: Home
+views:
+  - title: FireAngel
+    path: fireangel
+    panel: false
+    theme: ''
+    badges: []
+    cards:
+      - type: entities
+        entities:
+          - entity: sensor.fireangel_event_13f43e
+            secondary_info: last-updated
+          - entity: sensor.fireangel_event_06f93e
+            secondary_info: last-updated
+          - entity: sensor.fireangel_event_2d8d01
+            secondary_info: last-updated
+          - entity: sensor.fireangel_event_a76f18
+            secondary_info: last-changed
+          - entity: sensor.fireangel_event_ad8003
+            secondary_info: last-changed
+          - entity: sensor.fireangel_event_11ce01
+            secondary_info: last-updated
+        title: Alarm Events
+        show_header_toggle: true
+        state_color: false
+      - type: entities
+        entities:
+          - entity: sensor.fireangel_battery_13f43e
+          - entity: sensor.fireangel_battery_06f93e
+          - entity: sensor.fireangel_battery_2d8d01
+          - entity: sensor.fireangel_battery_a76f18
+          - entity: sensor.fireangel_battery_ad8003
+          - entity: sensor.fireangel_battery_11ce01
+        title: Battery Status
+      - type: entities
+        entities:
+          - entity: sensor.fireangel_onbase_13f43e
+          - entity: sensor.fireangel_onbase_06f93e
+          - entity: sensor.fireangel_onbase_2d8d01
+          - entity: sensor.fireangel_onbase_a76f18
+        show_header_toggle: true
+        state_color: false
+        title: Base Status
+      - type: entities
+        entities:
+          - entity: sensor.fireangel_radio_heartbeat
+          - entity: sensor.fireangel_radio_messages
+          - entity: sensor.fireangeldata
+        title: Gateway Information
+        state_color: false
+      - name: Check Radio Pairing
+        show_icon: true
+        show_name: true
+        tap_action:
+          action: call-service
+          service: shell_command.fireangel_get_pairing
+        type: button
+        icon: mdi:signal-variant
+        show_state: false
+        icon_height: 50px
+      - name: Initiate Radio Pairing
+        show_icon: true
+        show_name: true
+        tap_action:
+          action: call-service
+          service: shell_command.fireangel_start_pairing
+        type: button
+        icon: mdi:signal-distance-variant
+        show_state: true
+        icon_height: 50px
+      - name: Test Fire
+        show_icon: true
+        show_name: true
+        tap_action:
+          action: call-service
+          service: shell_command.fireangel_test_smoke
+        type: button
+        icon: mdi:fire
+        show_state: false
+        icon_height: 50px
+      - name: Test Carbon-monoxide
+        show_icon: true
+        show_name: true
+        tap_action:
+          action: call-service
+          service: shell_command.fireangel_test_co
+        type: button
+        icon: mdi:molecule-co
+        show_state: false
+        icon_height: 50px
+      - name: Silence Alarms
+        show_icon: true
+        show_name: true
+        tap_action:
+          action: call-service
+          service: shell_command.fireangel_silence_smoke
+        type: button
+        icon: mdi:volume-off
+        show_state: false
+        icon_height: 50px

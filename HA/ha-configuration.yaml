@@ -1,0 +1,400 @@
+
+tts:
+  - platform: google_cloud
+    base_url: http://192.168.0.200:8123
+    key_file: googlecloud.json
+    voice: en-GB-Wavenet-B
+    encoding: linear16
+    speed: 0.9
+    pitch: -1.0
+
+
+notify:
+  - platform: group
+    name: all_mobile_app_devices
+    services:
+      - service: mobile_app_iphone_1
+      - service: mobile_app_iphone_2
+    
+    
+recorder:
+  exclude:
+    entity_globs: 
+      - sensor.fireangeldata   
+      #Excludes the heartbeat updates from the radio (changes every few seconds)
+
+
+
+    
+    
+#-----------------
+#FireAngel Sensors
+#-----------------
+sensor:
+  - platform: serial
+    name: fireangeldata
+    serial_port: /dev/ttyUSB0
+    baudrate: 115200       
+  - platform: template
+    sensors:
+    
+      #HeartBeat 
+      #Result is Online or Offline based on heartbeat changes!
+      fireangel_radio_heartbeat:
+        friendly_name: 'HeartBeat'
+        icon_template: mdi:heart-pulse
+        value_template: >
+          {% if states.sensor.fireangeldata.state !='unknown' and (now() - states.sensor.fireangeldata.last_changed).total_seconds() < 125 %}
+          Online
+          {% else %}
+          Offline!
+          {% endif %}
+
+      #Messages from the radio to the user
+      fireangel_radio_messages:
+        friendly_name: 'Messages'
+        icon_template: mdi:message-processing
+        value_template: >          
+          {% if not '{' in states.sensor.fireangeldata.state %}
+          {{states.sensor.fireangeldata.state}}
+          {% endif %}
+          
+      #-----------------------------------    
+      #2D8D01 | FP2620W2 | Smoke | Bedroom
+      #-----------------------------------  
+      #EVENT
+      fireangel_event_2d8d01: 
+        unique_id: 'fireangel_event_2d8d01'
+        friendly_name: 'Bedroom Smoke Alarm'
+        icon_template: mdi:fire
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='2d8d01'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'MISSING' in states.sensor.fireangel_event_2d8d01.state %}
+          {{ states.sensor.fireangel_event_2d8d01.state }}
+          {% elif states.sensor.fireangeldata.attributes.event=='SILENCE' %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'EMERGENCY' in states.sensor.fireangel_event_2d8d01.state %}
+          {{ states.sensor.fireangel_event_2d8d01.state }}
+          {% endif %}
+      #BATTERY
+      fireangel_battery_2d8d01:
+        unique_id: 'fireangel_battery_2d8d01'
+        friendly_name: 'Bedroom Smoke Alarm'
+        icon_template: >
+          {% if states.sensor.fireangel_battery_2d8d01.state=='OK' %}
+          {{'mdi:battery'}}
+          {% elif states.sensor.fireangel_battery_2d8d01.state=='unknown' %}
+          {{'mdi:battery-unknown'}}
+          {% else %}
+          {{'mdi:battery-low'}}
+          {% endif %}       
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='2d8d01'.upper() and states.sensor.fireangeldata.attributes.battery is defined %}
+          {{ states.sensor.fireangeldata.attributes.battery }}
+          {% else %}
+          {{ states.sensor.fireangel_battery_2d8d01.state }}
+          {% endif %}
+      #BASE
+      fireangel_onbase_2d8d01:
+        unique_id: 'fireangel_onbase_2d8d01'
+        friendly_name: 'Bedroom Smoke Alarm'
+        icon_template: >
+          {% if states.sensor.fireangel_onbase_2d8d01.state=='ON' %}
+          {{'mdi:home'}}
+          {% elif states.sensor.fireangel_onbase_2d8d01.state=='unknown' %}
+          {{'mdi:help-circle'}}
+          {% else %}
+          {{'mdi:alert-circle'}}
+          {% endif %}       
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='2d8d01'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.base }}
+          {% else %}
+          {{ states.sensor.fireangel_onbase_2d8d01.state }}
+          {% endif %}
+          
+      #-----------------------------------  
+      #A76F18 | FP1720W2-R | Heat | Kitchen
+      #-----------------------------------  
+      #EVENT
+      fireangel_event_a76f18: 
+        unique_id: 'fireangel_event_a76f18'
+        friendly_name: 'Kitchen Heat Alarm'
+        icon_template: mdi:fire
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='a76f18'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'MISSING' in states.sensor.fireangel_event_a76f18.state %}
+          {{ states.sensor.fireangel_event_a76f18.state }}
+          {% elif states.sensor.fireangeldata.attributes.event=='SILENCE' %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'EMERGENCY' in states.sensor.fireangel_event_a76f18.state %}
+          {{ states.sensor.fireangel_event_a76f18.state }}
+          {% endif %}
+      #BATTERY
+      fireangel_battery_a76f18:
+        unique_id: 'fireangel_battery_a76f18'
+        friendly_name: 'Kitchen Heat Alarm'
+        icon_template: >
+          {% if states.sensor.fireangel_battery_a76f18.state=='OK' %}
+          {{'mdi:battery'}}
+          {% elif states.sensor.fireangel_battery_a76f18.state=='unknown' %}
+          {{'mdi:battery-unknown'}}
+          {% else %}
+          {{'mdi:battery-low'}}
+          {% endif %}       
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='a76f18'.upper() and states.sensor.fireangeldata.attributes.battery is defined %}
+          {{ states.sensor.fireangeldata.attributes.battery }}
+          {% else %}
+          {{ states.sensor.fireangel_battery_a76f18.state }}
+          {% endif %}
+      #BASE
+      fireangel_onbase_a76f18:
+        unique_id: 'fireangel_onbase_a76f18'
+        friendly_name: 'Kitchen Heat Alarm'
+        icon_template: >
+          {% if states.sensor.fireangel_onbase_a76f18.state=='ON' %}
+          {{'mdi:home'}}
+          {% elif states.sensor.fireangel_onbase_a76f18.state=='unknown' %}
+          {{'mdi:help-circle'}}
+          {% else %}
+          {{'mdi:alert-circle'}}
+          {% endif %}       
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='a76f18'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.base }}
+          {% else %}
+          {{ states.sensor.fireangel_onbase_a76f18.state }}
+          {% endif %}
+          
+      #-----------------------------------  
+      #13F43E | WST-630A | Smoke | Livingroom 
+      #-----------------------------------  
+      #EVENT
+      fireangel_event_13f43e: 
+        unique_id: 'fireangel_event_13f43e'
+        friendly_name: 'Livingroom Smoke Alarm'
+        icon_template: mdi:fire
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='13f43e'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'MISSING' in states.sensor.fireangel_event_13f43e.state %}
+          {{ states.sensor.fireangel_event_13f43e.state }}
+          {% elif states.sensor.fireangeldata.attributes.event=='SILENCE' %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'EMERGENCY' in states.sensor.fireangel_event_13f43e.state %}
+          {{ states.sensor.fireangel_event_13f43e.state }}
+          {% endif %}
+      #BATTERY
+      fireangel_battery_13f43e:
+        unique_id: 'fireangel_battery_13f43e'
+        friendly_name: 'Livingroom Smoke Alarm'
+        icon_template: >
+          {% if states.sensor.fireangel_battery_13f43e.state=='OK' %}
+          {{'mdi:battery'}}
+          {% elif states.sensor.fireangel_battery_13f43e.state=='unknown' %}
+          {{'mdi:battery-unknown'}}
+          {% else %}
+          {{'mdi:battery-low'}}
+          {% endif %}       
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='13f43e'.upper() and states.sensor.fireangeldata.attributes.battery is defined %}
+          {{ states.sensor.fireangeldata.attributes.battery }}
+          {% else %}
+          {{ states.sensor.fireangel_battery_13f43e.state }}
+          {% endif %}
+      #BASE
+      fireangel_onbase_13f43e: 
+        unique_id: 'fireangel_onbase_13f43e'
+        friendly_name: 'Livingroom Smoke Alarm'
+        icon_template: >
+          {% if states.sensor.fireangel_onbase_13f43e.state=='ON' %}
+          {{'mdi:home'}}
+          {% elif states.sensor.fireangel_onbase_13f43e.state=='unknown' %}
+          {{'mdi:help-circle'}}
+          {% else %}
+          {{'mdi:alert-circle'}}
+          {% endif %}       
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='13f43e'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.base }}
+          {% else %}
+          {{ states.sensor.fireangel_onbase_13f43e.state }}
+          {% endif %}
+
+      #-----------------------------------  
+      #06F93E | WST-630B | Smoke | Hallway 
+      #-----------------------------------  
+      #EVENT
+      fireangel_event_06f93e: 
+        unique_id: 'fireangel_event_06f93e'
+        friendly_name: 'Hallway Smoke Alarm'
+        icon_template: mdi:fire
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='06f93e'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'MISSING' in states.sensor.fireangel_event_06f93e.state %}
+          {{ states.sensor.fireangel_event_06f93e.state }}
+          {% elif states.sensor.fireangeldata.attributes.event=='SILENCE' %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'EMERGENCY' in states.sensor.fireangel_event_06f93e.state %}
+          {{ states.sensor.fireangel_event_06f93e.state }}
+          {% endif %}
+      #BATTERY
+      fireangel_battery_06f93e:
+        unique_id: 'fireangel_battery_06f93e'
+        friendly_name: 'Hallway Smoke Alarm'
+        icon_template: >
+          {% if states.sensor.fireangel_battery_06f93e.state=='OK' %}
+          {{'mdi:battery'}}
+          {% elif states.sensor.fireangel_battery_06f93e.state=='unknown' %}
+          {{'mdi:battery-unknown'}}
+          {% else %}
+          {{'mdi:battery-low'}}
+          {% endif %}       
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='06f93e'.upper() and states.sensor.fireangeldata.attributes.battery is defined %}
+          {{ states.sensor.fireangeldata.attributes.battery }}
+          {% else %}
+          {{ states.sensor.fireangel_battery_06f93e.state }}
+          {% endif %}
+      #BASE
+      fireangel_onbase_06f93e:
+        unique_id: 'fireangel_onbase_06f93e'
+        friendly_name: 'Hallway Smoke Alarm'
+        icon_template: >
+          {% if states.sensor.fireangel_onbase_06f93e.state=='ON' %}
+          {{'mdi:home'}}
+          {% elif states.sensor.fireangel_onbase_06f93e.state=='unknown' %}
+          {{'mdi:help-circle'}}
+          {% else %}
+          {{'mdi:alert-circle'}}
+          {% endif %}       
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='06f93e'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.base }}
+          {% else %}
+          {{ states.sensor. fireangel_onbase_06f93e.state }}
+          {% endif %}
+       
+      #-----------------------------------         
+      #11CE01 | W2-CO-10X | CO | Boiler Cupboard
+      #-----------------------------------  
+      #EVENT
+      fireangel_event_11ce01: 
+        unique_id: 'fireangel_event_11ce01'
+        friendly_name: ' Boiler Cupboard CO Alarm'
+        icon_template: mdi:molecule-co
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='11ce01'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'MISSING' in states.sensor.fireangel_event_11ce01.state %}
+          {{ states.sensor.fireangel_event_11ce01.state }}
+          {% elif states.sensor.fireangeldata.attributes.event=='SILENCE' %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'EMERGENCY' in states.sensor.fireangel_event_11ce01.state %}
+          {{ states.sensor.fireangel_event_11ce01.state }}
+          {% endif %}
+      #BATTERY
+      fireangel_battery_11ce01:
+        unique_id: 'fireangel_battery_11ce01'
+        friendly_name: ' Boiler Cupboard CO Alarm'
+        icon_template: >
+          {% if states.sensor.fireangel_battery_11ce01.state=='OK' %}
+          {{'mdi:battery'}}
+          {% elif states.sensor.fireangel_battery_11ce01.state=='unknown' %}
+          {{'mdi:battery-unknown'}}
+          {% else %}
+          {{'mdi:battery-low'}}
+          {% endif %}       
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='11ce01'.upper() and states.sensor.fireangeldata.attributes.battery is defined %}
+          {{ states.sensor.fireangeldata.attributes.battery }}
+          {% else %}
+          {{ states.sensor.fireangel_battery_11ce01.state }}
+          {% endif %}  
+     
+      #-----------------------------------  
+      #AD8003 | W2-CO-10X | CO | Kitchen
+      #-----------------------------------  
+      #EVENT
+      fireangel_event_ad8003: 
+        unique_id: 'fireangel_event_ad8003'
+        friendly_name: 'Kitchen CO Alarm'
+        icon_template: mdi:molecule-co
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='ad8003'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'MISSING' in states.sensor.fireangel_event_ad8003.state %}
+          {{ states.sensor.fireangel_event_ad8003.state }}
+          {% elif states.sensor.fireangeldata.attributes.event=='SILENCE' %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'EMERGENCY' in states.sensor.fireangel_event_ad8003.state %}
+          {{ states.sensor.fireangel_event_ad8003.state }}
+          {% endif %}
+      #BATTERY
+      fireangel_battery_ad8003:
+        unique_id: 'fireangel_battery_ad8003'
+        friendly_name: 'Kitchen CO Alarm'
+        icon_template: >
+          {% if states.sensor.fireangel_battery_ad8003.state=='OK' %}
+          {{'mdi:battery'}}
+          {% elif states.sensor.fireangel_battery_ad8003.state=='unknown' %}
+          {{'mdi:battery-unknown'}}
+          {% else %}
+          {{'mdi:battery-low'}}
+          {% endif %}       
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='ad8003'.upper() and states.sensor.fireangeldata.attributes.battery is defined %}
+          {{ states.sensor.fireangeldata.attributes.battery }}
+          {% else %}
+          {{ states.sensor.fireangel_battery_ad8003.state }}
+          {% endif %}   
+       
+      #-----------------------------------         
+      #601A03 | W2-SVP-630 | Strobe
+      #-----------------------------------  
+      #EVENT
+      fireangel_event_601a03: 
+        unique_id: 'fireangel_event_601a03'
+        friendly_name: 'Strobe Alarm'
+        icon_template: mdi:vibrate
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='601a03'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'MISSING' in states.sensor.fireangel_event_601a03.state %}
+          {{ states.sensor.fireangel_event_601a03.state }}
+          {% elif states.sensor.fireangeldata.attributes.event=='SILENCE' %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% elif 'EMERGENCY' in states.sensor.fireangel_event_601a03.state %}
+          {{ states.sensor.fireangel_event_601a03.state }}
+          {% endif %}         
+      
+      #-----------------------------------        
+      #A5B813 | PSEUDO FIRMWARE ALARM
+      #-----------------------------------  
+      #EVENT
+      fireangel_event_a5b813: 
+        unique_id: 'fireangel_event_a5b813'
+        friendly_name: 'Built in Test Function'
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='a5b813'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% endif %}         
+
+#---------------------------------------------------------
+#FireAngel shell commands (used to send data to the alarms)
+#---------------------------------------------------------
+shell_command:
+   fireangel_test_co: /bin/bash -c "echo -e -n "1~" > /dev/ttyUSB0"
+   fireangel_test_smoke: /bin/bash -c "echo -e -n "2~" > /dev/ttyUSB0"
+   fireangel_test_all: /bin/bash -c "echo -e -n "3~" > /dev/ttyUSB0"
+   fireangel_emergency_co: /bin/bash -c "echo -e -n "4~" > /dev/ttyUSB0"
+   fireangel_emergency_smoke: /bin/bash -c "echo -e -n "5~" > /dev/ttyUSB0" 
+   fireangel_silence_co: /bin/bash -c "echo -e -n "6~" > /dev/ttyUSB0"    
+   fireangel_silence_smoke: /bin/bash -c "echo -e -n "7~" > /dev/ttyUSB0"    
+   fireangel_get_pairing: /bin/bash -c "echo -e -n "8~" > /dev/ttyUSB0"
+   fireangel_start_pairing: /bin/bash -c "echo -e -n "9~" > /dev/ttyUSB0"
+

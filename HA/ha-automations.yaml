@@ -1,0 +1,228 @@
+- id: '1620428541168'
+  alias: FireAngel Test Fail Notifications
+  description: FireAngel Test Fail Notifications
+  trigger:
+  - platform: state
+    entity_id: sensor.fireangel_event_13f43e
+  - platform: state
+    entity_id: sensor.fireangel_event_2d8d01
+  - platform: state
+    entity_id: sensor.fireangel_event_06f93e
+  - platform: state
+    entity_id: sensor.fireangel_event_601a03
+  - platform: state
+    entity_id: sensor.fireangel_event_11ce01
+  - platform: state
+    entity_id: sensor.fireangel_event_a76f18
+  - platform: state
+    entity_id: sensor.fireangel_event_ad8003
+  condition:
+  - condition: template
+    value_template: '{{ ''TEST'' in trigger.to_state.state }}'
+  - condition: template
+    value_template: '{{ states.sensor.fireangeldata.attributes.result==''FAIL''}}'
+  action:
+  - data_template:
+      data:
+        apns_headers:
+          apns-collapse-id: fireangel-test-notification
+      message: A {{ trigger.to_state.state }} event was triggered by the {{ trigger.to_state.attributes.friendly_name}}.
+        There is a fault with the alarm! Check or replace it as necessary. See the
+        user manual for full details.
+      title: FireAngel Alarm Test
+    service: notify.all_mobile_app_devices
+  - service: tts.google_cloud_say
+    data:
+      entity_id: media_player.broadcast_group
+      message: A {{ trigger.to_state.state }} event was triggered by the {{ trigger.to_state.attributes.friendly_name}}.
+        There is a fault with the alarm. Check or replace it as necessary.
+  mode: single
+- id: '1620428541169'
+  alias: FireAngel Test Pass Notifications
+  description: FireAngel Test Pass Notifications
+  trigger:
+  - platform: state
+    entity_id: sensor.fireangel_event_13f43e
+  - platform: state
+    entity_id: sensor.fireangel_event_2d8d01
+  - platform: state
+    entity_id: sensor.fireangel_event_06f93e
+  - platform: state
+    entity_id: sensor.fireangel_event_601a03
+  - platform: state
+    entity_id: sensor.fireangel_event_11ce01
+  - platform: state
+    entity_id: sensor.fireangel_event_a5b813
+  - platform: state
+    entity_id: sensor.fireangel_event_a76f18
+  - platform: state
+    entity_id: sensor.fireangel_event_ad8003
+  condition:
+  - condition: template
+    value_template: '{{ ''TEST'' in trigger.to_state.state }}'
+  - condition: template
+    value_template: '{{ states.sensor.fireangeldata.attributes.result==''PASS''}}'
+  action:
+  - data_template:
+      data:
+        apns_headers:
+          apns-collapse-id: fireangel-test-notification
+      message: A {{ trigger.to_state.state }} event was triggered by the {{ trigger.to_state.attributes.friendly_name}}.
+        The alarm is functioning normally.
+      title: FireAngel Alarm Test
+    service: notify.all_mobile_app_devices
+  - service: tts.google_cloud_say
+    data:
+      entity_id: media_player.broadcast_group
+      message: A {{ trigger.to_state.state }} event was triggered by the {{ trigger.to_state.attributes.friendly_name}}.
+        This is only a test. The alarm is functioning normally.
+  mode: single
+- id: '1620428541170'
+  alias: FireAngel Base Notifications
+  description: FireAngel Base Notifications
+  trigger:
+  - platform: state
+    entity_id: sensor.fireangel_onbase_13f43e
+    to: 'OFF'
+    for: '1'
+  - platform: state
+    entity_id: sensor.fireangel_onbase_2d8d01
+    to: 'OFF'
+    for: '1'
+  - platform: state
+    entity_id: sensor.fireangel_onbase_06f93e
+    to: 'OFF'
+    for: '1'
+  - platform: state
+    entity_id: sensor.fireangel_onbase_a76f18
+    to: 'OFF'
+    for: '1'
+  condition: []
+  action:
+  - data_template:
+      data:
+        apns_headers:
+          apns-collapse-id: fireangel-off-base-notification
+      message: Warning! The {{ trigger.to_state.attributes.friendly_name }} was removed
+        from its base
+      title: FireAngel Alarm Off Base
+    service: notify.all_mobile_app_devices
+  - service: tts.google_cloud_say
+    data:
+      entity_id: media_player.broadcast_group
+      message: Warning! The {{ trigger.to_state.attributes.friendly_name }} was removed
+        from its base
+  mode: single
+- id: '1620428541171'
+  alias: FireAngel Emergency Notifications
+  description: FireAngel Emergency Notifications
+  trigger:
+  - platform: state
+    entity_id: sensor.fireangel_event_13f43e
+  - platform: state
+    entity_id: sensor.fireangel_event_2d8d01
+  - platform: state
+    entity_id: sensor.fireangel_event_06f93e
+  - platform: state
+    entity_id: sensor.fireangel_event_601a03
+  - platform: state
+    entity_id: sensor.fireangel_event_11ce01
+  - platform: state
+    entity_id: sensor.fireangel_event_a5b813
+  - platform: state
+    entity_id: sensor.fireangel_event_a76f18
+  - platform: state
+    entity_id: sensor.fireangel_event_ad8003
+  condition:
+  - condition: template
+    value_template: '{{ ''EMERGENCY'' in trigger.to_state.state }}'
+  action:
+  - data_template:
+      data:
+        push:
+          sound:
+            name: default
+            critical: 1
+            volume: 1.0
+      message: WARNING! A {{ trigger.to_state.state }} has been reported by the {{
+        trigger.to_state.attributes.friendly_name}}. Take action now!
+      title: FireAngel Alarm Emergency
+    service: notify.all_mobile_app_devices
+  - service: tts.google_cloud_say
+    data:
+      entity_id: media_player.broadcast_group
+      message: WARNING! WARNING! A {{ trigger.to_state.state }} has been reported
+        by the {{ trigger.to_state.attributes.friendly_name}}. Take action now! This
+        is not a test. Repeat. A {{ trigger.to_state.state }} has been reported by
+        the {{ trigger.to_state.attributes.friendly_name}}. Take action now! This
+        is not a test.
+  mode: single
+- id: '1620428541172'
+  alias: FireAngel Offline Notifications
+  description: FireAngel Offline Notifications
+  trigger:
+  - platform: state
+    entity_id: sensor.fireangel_radio_heartbeat
+    to: Offline!
+    for: '35'
+  condition: []
+  action:
+  - data_template:
+      data:
+        push:
+          sound:
+            name: default
+            critical: 1
+            volume: 1.0
+      message: WARNING! The FireAngel Gateway is Offline
+      title: FireAngel Gateway Offline
+    service: notify.all_mobile_app_devices
+  mode: single
+- id: '1620428541173'
+  alias: FireAngel Missing Notifications
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.fireangel_event_13f43e
+    to: MISSING
+    for: '1'
+  - platform: state
+    entity_id: sensor.fireangel_event_2d8d01
+    to: MISSING
+    for: '1'
+  - platform: state
+    entity_id: sensor.fireangel_event_06f93e
+    to: MISSING
+    for: '1'
+  - platform: state
+    entity_id: sensor.fireangel_event_601a03
+    to: MISSING
+    for: '1'
+  - platform: state
+    entity_id: sensor.fireangel_event_11ce01
+    to: MISSING
+    for: '1'
+  - platform: state
+    entity_id: sensor.fireangel_event_a76f18
+    to: MISSING
+    for: '1'
+  - platform: state
+    entity_id: sensor.fireangel_event_ad8003
+    to: MISSING
+    for: '1'
+  condition: []
+  action:
+  - data_template:
+      data:
+        apns_headers:
+          apns-collapse-id: fireangel-missing-notification
+      message: Warning! The {{ trigger.to_state.attributes.friendly_name }} has beeen
+        reported as missing by other alarms in the network
+      title: FireAngel Alarm Off Base
+    service: notify.all_mobile_app_devices
+  - service: tts.google_cloud_say
+    data:
+      entity_id: media_player.broadcast_group
+      message: Warning! The {{ trigger.to_state.attributes.friendly_name }} has beeen
+        reported as missing by other alarms in the network
+  mode: single

@@ -1,0 +1,10 @@
+When the alarm wants to send data to a radio, like when alarm is triggered or test button is pressed, then alarm pulls IRQ (pin8) high (normally low).
+IRQ goes high, the radio (master) responds by sending _SS low and running the clock.
+One byte is sent from alarm to radio, then _SS returns high.
+IRQ goes low then high for the next byte.
+
+
+When radio wants to transmit to alarm, like when the other alarms go off...
+_SS is brought low. Clock runs and byte is sent from SDO (pin6).
+_SS then returns high. Alarm seems to ACK with a pulse on IRQ (pin8).
+_SS then goes low again and next byte is sent

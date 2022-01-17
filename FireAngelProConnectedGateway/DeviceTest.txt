@@ -1,0 +1,47 @@
+test
+70 2d 8d 01 81 01 ed 08 07 08
+
+Device tested message received for SID (7)
+
+off base
+71 2d 8d 01 ed 08 01 07 09 
+
+[01;35mFault received from device 0x018d2d, model 0x08ed, flags 0x01, SID 7, seq 9
+
+
+Devices
+
+   70.974 INF LogSetOperation: [01;34mSetting reported property 'flt' (20000064) on device id=0000000000018d2d to false[00m
+   70.987 INF LogSetOperation: [01;34mSetting create property 'mute' (2000000f) on device id=0000000000018d2d to false[00m
+   71.000 INF LogSetOperation: [01;34mSetting reported property 'c_fld' (20000013) on device id=0000000000018d2d to false[00m
+   71.015 INF LogSetOperation: [01;34mSetting reported property 'iddev_trgrd' (2000001c) on device id=0000000000018d2d to 0[00m
+   
+   71.028 INF LogSetOperation: [01;34mSetting reported property 'flt' (20000064) on device id=00000000003ef906 to false[00m
+   71.042 INF LogSetOperation: [01;34mSetting create property 'mute' (2000000f) on device id=00000000003ef906 to false[00m
+   71.054 INF LogSetOperation: [01;34mSetting reported property 'c_fld' (20000013) on device id=00000000003ef906 to false[00m
+   71.066 INF LogSetOperation: [01;34mSetting reported property 'iddev_trgrd' (2000001c) on device id=00000000003ef906 to 0[0
+   0m
+   71.079 INF LogSetOperation: [01;34mSetting reported property 'flt' (20000064) on device id=00000000003ef413 to false[00m
+   71.092 INF LogSetOperation: [01;34mSetting create property 'mute' (2000000f) on device id=00000000003ef413 to false[00m
+   71.104 INF LogSetOperation: [01;34mSetting reported property 'c_fld' (20000013) on device id=00000000003ef413 to false[00m
+   71.117 INF LogSetOperation: [01;34mSetting reported property 'iddev_trgrd' (2000001c) on device id=00000000003ef413 to 0[00m
+   
+   71.130 INF LogSetOperation: [01;34mSetting reported property 'flt' (20000064) on device id=000000000001ce11 to false[00m
+   71.144 INF LogSetOperation: [01;34mSetting create property 'mute' (2000000f) on device id=000000000001ce11 to false[00m
+   71.156 INF LogSetOperation: [01;34mSetting reported property 'c_fld' (20000013) on device id=000000000001ce11 to false[00m
+   71.168 INF LogSetOperation: [01;34mSetting reported property 'iddev_trgrd' (2000001c) on device id=000000000001ce11 to 0[00m
+   
+   
+   
+   
+   events
+  a - test button
+  
+ 1941.695 INF LogSetOperation: [01;34mSetting reported property 'mfr' (2) on device id=0000000000018d2d to 'Sprue'[00m
+ 1941.697 INF LogSetOperation: [01;34mSetting reported property 'mdVal' (20000005) on device id=0000000000018d2d to 2285[00m
+ 1941.699 INF LogSetOperation: [01;34mSetting reported property 'model' (3) on device id=0000000000018d2d to '2285'[00m
+ 1941.700 INF LogSetOperation: [01;34mSetting reported property 'onln' (4) on device id=0000000000018d2d to 1[00m
+ 1941.703 INF LogSetOperation: [01;34mSetting reported property 'sid' (20000004) on device id=0000000000018d2d to 7[00m
+ 1941.705 INF LogSetOperation: [01;34mSetting reported property 'testb' (20000003) on device id=0000000000018d2d to 1617300402[00m
+ 
+ Setting reported property 'netwk' (20000001) on device id=0000e41e0aa03420 to true

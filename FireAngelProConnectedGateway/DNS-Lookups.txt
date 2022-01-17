@@ -1,0 +1,3 @@
+DNS lookups:
+• a1i5mar9xlen2b-ats.iot.eu-central-1.amazonaws.com
+• pool.ntp.org
