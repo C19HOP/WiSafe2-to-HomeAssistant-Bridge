@@ -1,7 +1,7 @@
 ## Project Background
-Like some others, I have some expired Google Nest Protects, which I wanted to replace with a cheaper / more-scalable alternative. But above all, I wanted to realise a trustworthy fire/CO alarm system, which ia integrates with HomeAssistant.
+Like some others, I have some expired Google Nest Protects, which I wanted to replace with a cheaper / more-scalable alternative. But above all, I wanted to realise a trustworthy fire/CO alarm system, which integrates with HomeAssistant.
 
-In persuit of this, I initially purchased the FireAngel Pro Connected Gateway, but found it to be a dreadfully unreliable piece of kit.
+In pursuit of this, I initially purchased the FireAngel Pro Connected Gateway, but found it to be a dreadfully unreliable piece of kit.
 As part of my testing, I removed all the alarms at once, and it didn't notice! 
 
 Pressing 'test' in the App still reported all alarms 'online'. 
@@ -12,24 +12,30 @@ So when you consider the safety and reliability of a DIY aproach, just remember 
 After being bitterly disappointed with the FireAngel Gateway (and not minding if I destroyed it), my next step was to attached it to a debugger, to see exactly what it was doing (with the mindset of intercepting its comms to create a local HA integration).
 I could see some JSON state changes being sent to AWS. But I found the messages were very slow to report, and even worse was that it stopped updating locally if the internet connection went down. So in the end, I decided to forget the gateway, and instead, build my own bridge from a donor radio module.
 
-If you're interested in the debug log I trapped from the gateway, you can check it out here
+![Gateway Debug Pins](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/FireAngelProConnectedGateway/Gateway_debug_02.jpg)
+
+If you're interested in the debug log I trapped from the gateway, you can check it out here:
+
 [GitHub - FireAngelProConnectedGateway](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
 
-The WiSafe2 radios uses an 868MHz radio. I considered useing a generic 868MHz transiver to intercept the comms. But the data over the air is encrypted and and the specification is not documented for the public anyway.
-So rather than trying to simulate a FireAngel radio, I looked at a radio module and noted that it uses SPI to communicate with the alarm board. The path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge.
+Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered useing a generic 868MHz transiver to intercept the comms. But the data over-the-air is encrypted and and the specification is not documented for the public anyway.
+So rather than trying to simulate a FireAngel radio, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge.
 
 With the radio on the bench, I used PulseView to trap the communication and reverse-engineered everything that I could figure out. 
-Check here if you're interested in the communication specification. Maybe you have some inside knowlege and can add to it?
+Check here if you're interested in the communication specification. Maybe you have some inside knowlege and can add more detail to it?
+
+[GitHub - WiSafeCommunicationAnalysis](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/WiSafeCommunicationAnalysis)
+
 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+![HA LoveLace](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA-lovelace.png)
 
-This project explains how I used a WiSafe2 radio module, along with an Arduino Nano, to bridge my network of FireAngel WiSafe2 alarms into HomeAssistant.
+
+I'll explain how I used a WiSafe2 radio module, along with an Arduino Nano, to bridge my network of FireAngel WiSafe2 alarms into HomeAssistant.
 Using this method, all communication is local (unlike the FireAngel Connected Gateway product, which pushes states to AWS).
 
-
-This WiSafe2HA bridge should work with any WiSafe2 alarm. But it has been specifically tested to work with the used the following alarms:
+This WiSafe2-to-HA Bridge should work with any WiSafe2 alarm. But it has been specifically tested with the alarms I have, which are:
 * FP2620W2
 * FP1720W2-R
 * WST-630
@@ -38,52 +44,67 @@ This WiSafe2HA bridge should work with any WiSafe2 alarm. But it has been specif
 
 
 With this project, via Home Assistant, I am able to receive notifications when:
-* An alarm is tested (the type of test - heat, smoke, CO and the result - OK/Not OK)
-* An emergency event occurs (and the type of event - Fire/CO)
+* An alarm is tested (including type and result)
+  * heat, smoke, CO 
+  * OK/Not-OK)
+* An emergency event occurs (and the type of event)
+  * Smoke
+  * Heat
+  * CO
 * An alarm is removed from / attached to its base
 * An alarm's battery is running low
 
 I can also send data back to the network, including:
-* Fire Test
-* CO Test
-* Silence an alarm
+* Perform a Fire Test
+* Perform a CO Test
+* Silence an alarm (takes a moment to propergate through the network, just like pressing the actual silence button on a physical alarm)
 
 And I can perform some basic configuration, like check and enable network pairing mode.
-The bridge also produces a heart-beat, so we can be confident in it's connection to HA.
+The bridge also produces a heart-beat, so we can be confident that it is communicating with HA.
+
+I highly recommend that you make sure your Home Assistant instance is configured to use Google Home / Amazon Alexa for TTS & that you have the Mobile Phone Companion App, working over the internet for phone notifications.
+
+![HA Notification](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA%20App%20notifications.png)
+![HA TTS](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/ha-fireangel-googlehome.mp4)
 
 
-To build the WiSafe2HA bridge, you'll need:
-* Home Assistant (optional Google Home / Amazon Alexa for TTS & Mobile Phone companion app for notifications)
+## Shopping List
+To build the WiSafe2-to-HA Bridge, you'll need:
 * A WiSafe2 radio module
 * An Arduino Nano
 * PCB
 * 4ch Level Converter (x2)
 * 2.54mm jumper
-* Enclosure (optional)
-
-
+* 2.54mm male header (2-pins)
+* Enclosure
 
 
 ## Obtaining the parts
 The WiSafe2 radio modules can be obtained from:
 * Any old alarm. Perhaps you can find one which has expired, or has gone faulty.
 * The W2-SVP-630 strobe units can regually be found for sale on ebay and are otherwise worthless 2nd-hand... I picked mine up for £5 :)
-* The radio can be bought as a stand-alone module. But expect to over-pay if buying it new
+* The radio can be bought as a stand-alone module. But expect to over-pay if buying it new.
 
 The Arduino Nano:
-Just a regular Arduino Nano (or clone). Should be 5v @ 16MHz.
+Just a regular Arduino Nano (or clone). Make sure it is 5v @ 16MHz.
 
 The PCB:
+
+![PCB design](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb01.png
+![PCB board](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb02.png
+
 Here's a link to the PCB I made for this:
-* JSON file (for loading into easy-EDA): 
-* gerber files (for ordering direct from JLCPCB, etc): 
-I made this PCB using easy easy-EDA and I ordered mine from JLCPCB using easy-EDA's built in PCB ordering function. 
+* [JSON file (for loading into easy-EDA):](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/WiSafe2HA-bridge-PCB.json)
+* [Gerber files (for ordering direct from JLCPCB, etc):](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/Gerber_EASYEDA-WiSafe2HA-bridge-PCB.zip)
+
+You can load the JSON into easyEDA and order some PCBs using the built-in JLCPCB ordering utility. It cost me a couple of USD, plus delivery.
+Or in case it's easier for you, you can use the Gerber files to place the order yourself. 
 
 Level Converter:
 You need 2x 4ch level converters. Just search ebay for "4ch Logic Level Shifter Converter Module 5V to 3.3V"
 
 2.54mm jumper:
-Rummage through your drawerers. There's always one in there somewhere!
+Rummage through your drawerers. There's definately one in there somewhere!
 
 2.54mm male header:
 Search ebay for 2.54mm male header. You only need 2 pins, for attaching the jumper to.
@@ -92,6 +113,8 @@ If this is a problem, you can always just bridge the contacts together with sold
 Enclosure:
 Here's a link to the STL file for the enclosure I made.
 
+![Enclosure-Open](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Enclosure/enclosure-open.jpg)
+![Enclosure-Closed](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Enclosure/enclosure-closed.jpg)
 
 
 ## More information
@@ -100,41 +123,42 @@ I built this bridge using an Arduino Nano, as opposed to an ESP8266 because:
 * I needed to use SPI slave mode (the radio is designed to be the master)... The ESP8266 only supports SPI as a master
 
 
-
 ## Building the project
 Program the Arduino Nano, using the sketch code provided. You shouldn't need to change anything.
-ToDo: add link:
+[Arduino Sketch](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Arduino/FireAngelNano.ino)
 
-There are variables for the EMBEDDED DEVICE ID and MODEL, which you can change if you like. Basically, the radio thinks it's connected to an alarm. The parameters we set here define the type of alarm that the Nano will simulate.
-This is used when we initiate a CO/Fire test from HA. Or silence the alarms.
-The information here just needs to be unique (i.e. not the same as another device on your network).
-Chances are you can leave it all alone.
+Although there are some variables declared for the 'EMBEDDED DEVICE ID' and 'MODEL', which you can change if you like. Basically, the radio thinks it's connected to an alarm. The parameters we set here define the type of alarm that the Nano will simulate.
+This is used when we initiate a test from HA, or when the alarms are silenced.
+The information here just needs to be unique on your network. Chances are you can just leave it all alone.
 
 The only library dependency is the SPI library, which should be installed into the Arduino IDE by default.
 If you encounter any trouble uploading the sketch, try setting the processor to ATmega328P (old bootloader). I found is nearly always required if using an Arduino Nano 'compatible'.
+![Enclosure-Closed](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Arduino/Nano%20bootloader.png)
 
-Then you can solder all the components to the PCB.
-This is self-explainitory. The PCB silk-screen shows the correct way to insert the level converters and the Arduino Nano.
+When you're ready to solder all the components to the PCB, you should find the layout is self-explainitory. The PCB silk-screen shows the correct way to insert the level converters and the Arduino Nano.
 The WiSafe2 radio can only be soldered in one way.
 
-Radio modules from alarms have a backup battery. Whereas the modules from the Strobe (plug-in) units don't. If your radio has a battery, I recommend removing it. This ensures the Arduino will initialise the radio from a cold-start if the power is ever cycled.
+Note: Radio modules from alarms have a backup battery. Whereas the modules from the Strobe (plug-in) units don't. If your radio has a battery, I recommend removing it. This ensures the Arduino will initialise the radio from a cold-start if the power is ever cycled.
 Removing the battery is also required if you want to use the 3D-printed enclosure I provide.
 
 
 ## Configuring the hardware
 There is a jumper which toggles the driver mode. For normal operation with HomeAssistant, the jumper should be on.
 
-If you want to receive raw wi-safe2 hex data from the alarm network, for the purpose of further development (to add support for other alarms or functions, etc) then remove the jumper and connect the gateway to a serial debugger. You'll see the raw WiSafe2 hex data.
-See my communication analysis notes for more info:
+If you want to receive raw wi-safe2 hex data from the alarm network, for the purpose of further development (to add support for other alarms or functions, etc. Or to use this bridge with something other than HA) then you can remove the jumper. After this, the bridge driver will send/receive raw hex data, instead of JSON formatted messages / preset CMDs. 
 
 
 # Setting up in HomeAssistant
-You'll be plugging the Arduino Nano into your HA device via USB. If it's the only USB to Serial device attached, it will show up as /dev/ttyUSB0
-If you have more USB serial devices attached, it could be USB1, etc. You can check in HomeAssistant's Hardware Page.
-I'll use /dev/ttyUSB0 for the example configuration.
+You'll be plugging the Arduino Nano into your HA server via USB. If it's the only USB-to-Serial device attached, it will show up as /dev/ttyUSB0
+If you have more USB serial devices attached, it could be ttyUSB1, etc. You can check this in your HomeAssistant's Hardware Page.
+[http://your-ha-ip:8123/hassio/system](http://your-ha-ip:8123/hassio/system)
+
+Then click the ⋮ > Hardware
+
+I'll assume /dev/ttyUSB0 for the example configuration.
 
 These changes are done inside the HA configuration.yaml file.
-Note: Whilst my HA configuration files (yaml) work fine for me, I am far from being a HA expert. So I'm sure the HA gurus amongst you will be able to improve/optimise this configuration significantly.
+Note: Whilst my HA configuration files (yaml) work fine for me, I'm sure the HA yaml gurus amongst you will be able to improve/optimise this configuration significantly.
 Please feel free to contribute any improvements and optimisations to these HA configuration files if this is your thing.
 
 First, we'll adjust the recorder. The heartbeat of the bridge updates every 20 seconds or so. It does not seem logical to have HomeAssistant record the history of the heartbeat. We can disable entity recording by adding this:
@@ -296,7 +320,7 @@ sensor:
           {% else %}
           {{ states.sensor.fireangel_onbase_a76f18.state }}
           {% endif %}
-		  
+
       #-----------------------------------  
       #AD8003 | W2-CO-10X | CO | Kitchen
       #-----------------------------------  
@@ -336,6 +360,7 @@ sensor:
  ```
 
 
+
 To talk back to the bridge, you can add this configuration:
 
  ```yaml
@@ -353,6 +378,7 @@ shell_command:
    fireangel_get_pairing: /bin/bash -c "echo -e -n "8~" > /dev/ttyUSB0"
    fireangel_start_pairing: /bin/bash -c "echo -e -n "9~" > /dev/ttyUSB0"
  ```   
+   
    
 Now you can start adding some entities to your dashboard.
 
@@ -513,7 +539,7 @@ Add sensors for each of your alarms, and you're pretty much done.
 
 ## Value Add
 For the full experiance, I recommend making sure you have TTS (Google/Alexa) and Mobile Phone notifications setup and working. I won't go into detail here, as this is just HA stuff, and not specific to this project. 
-But I'll quickly share the congiguration I use for goole wavenet:
+But I'll quickly share the configuration I use for Google wavenet:
 
  ```yaml
 tts:
@@ -760,177 +786,15 @@ I also have the events configured as 'critical', so that my phone will make a so
       data:
         apns_headers:
           apns-collapse-id: fireangel-missing-notification
-      message: Warning! The {{ trigger.to_state.attributes.friendly_name }} has beeen
+      message: Warning! The {{ trigger.to_state.attributes.friendly_name }} has been
         reported as missing by other alarms in the network
       title: FireAngel Alarm Off Base
     service: notify.all_mobile_app_devices
   - service: tts.google_cloud_say
     data:
       entity_id: media_player.broadcast_group
-      message: Warning! The {{ trigger.to_state.attributes.friendly_name }} has beeen
+      message: Warning! The {{ trigger.to_state.attributes.friendly_name }} has been
         reported as missing by other alarms in the network 
  ```
 
 
-
-
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
-
-Use the `BLANK_README.md` to get started.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-### Built With
-
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
-* [Next.js](https://nextjs.org/)
-* [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- GETTING STARTED -->
-## Getting Started
-
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
-### Installation
-
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/your_username_/Project-Name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-    - [ ] Chinese
-    - [ ] Spanish
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- CONTACT -->
-## Contact
-
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
-* [GitHub Pages](https://pages.github.com)
-* [Font Awesome](https://fontawesome.com)
-* [React Icons](https://react-icons.github.io/react-icons/search)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
-[product-screenshot]: images/screenshot.png
