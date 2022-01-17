@@ -85,8 +85,7 @@ The bridge also produces a heart-beat, so we can be confident that it is communi
 I highly recommend that you make sure your Home Assistant instance is configured to use Google Home / Amazon Alexa for TTS & that you have the Mobile Phone Companion App, working over the internet for phone notifications.
 
 ![HA Notification](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA%20App%20notifications.png)
-
-[Here's a video of my Google Home announcing an event](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/ha-fireangel-googlehome.mp4)
+[![Video of my Google Home announcing an event](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/ha-fireangel-googlehome.png)](https://youtu.be/Ph-9fv3ursU)
 
 
 ## Shopping List
