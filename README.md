@@ -13,7 +13,7 @@ After being bitterly disappointed with the FireAngel Gateway (and not minding if
 I could see some JSON state changes being sent to AWS. But I found the messages were very slow to report, and even worse was that it stopped updating locally if the internet connection went down. So in the end, I decided to forget the gateway, and instead, build my own bridge from a donor radio module.
 
 If you're interested in the debug log I trapped from the gateway, you can check it out here
-[GitHub - FireAngelProConnectedGateway] (https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
+[GitHub - FireAngelProConnectedGateway](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
 
 The WiSafe2 radios uses an 868MHz radio. I considered useing a generic 868MHz transiver to intercept the comms. But the data over the air is encrypted and and the specification is not documented for the public anyway.
 So rather than trying to simulate a FireAngel radio, I looked at a radio module and noted that it uses SPI to communicate with the alarm board. The path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge.
