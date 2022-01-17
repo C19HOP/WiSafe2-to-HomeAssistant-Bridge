@@ -66,13 +66,13 @@ This WiSafe2-to-HA Bridge should work with any WiSafe2 alarm. But it has only be
 With this project, via Home Assistant, I am able to receive notifications when:
 * An alarm is tested (including type and result)
   * heat, smoke, CO 
-  * OK/Not-OK)
+  * OK/Not-OK
 * An emergency event occurs (and the type of event)
-  * Smoke
-  * Heat
+  * Fire
   * CO
 * An alarm is removed from / attached to its base
 * An alarm's battery is running low
+* The other alarms are complaining about a paired but missing device (I don't do anything with that info)
 
 I can also send data back to the network, including:
 * Perform a Fire Test
@@ -82,7 +82,7 @@ I can also send data back to the network, including:
 And I can perform some basic configuration, like check and enable network pairing mode.
 The bridge also produces a heart-beat, so we can be confident that it is communicating with HA.
 
-I highly recommend that you make sure your Home Assistant instance is configured to use Google Home / Amazon Alexa for TTS & that you have the Mobile Phone Companion App, working over the internet for phone notifications.
+I highly recommend that you configure your Home Assistant instance to use Google Home / Amazon Alexa for TTS & that you have the Mobile Phone Companion App, working over the internet for remote phone notifications.
 
 ![HA Notification](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA%20App%20notifications.png)
 [![Video of my Google Home announcing an event](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/ha-fireangel-googlehome.png)](https://youtu.be/Ph-9fv3ursU)
@@ -127,7 +127,7 @@ You need 2x 4ch level converters. Just search ebay for "4ch Logic Level Shifter 
 Rummage through your drawers. There's definitely one in there somewhere!
 
 ### 2.54mm male header
-Search ebay for 2.54mm male header. You only need 2 pins, for attaching the jumper to.
+Search ebay for 2.54mm male header. You only need 2 pins for attaching the jumper to.
 If this is a problem, you can always just bridge the contacts together with solder.
 
 ### Enclosure
@@ -161,6 +161,8 @@ The WiSafe2 radio can only be soldered in one way.
 
 ![PCB board](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb02.png)
 
+The antenna is just a a wire connected to the 'ANT' pin. It should be cut to 17.27cm (1/2 wavelength), or 8.64cm (1/4 wavelength).
+
 Note: Radio modules from alarms have a backup battery. Whereas the modules from the Strobe (plug-in) units don't. If your radio has a battery, I recommend removing it. This ensures the Arduino will initialise the radio from a cold-start if the power is ever cycled.
 Removing the battery is also required if you want to use the 3D-printed enclosure I provide.
 
@@ -173,26 +175,27 @@ If you want to receive raw WiSafe2 hex data from the alarm network, for the purp
 
 # Setting the bridge up in HomeAssistant
 You'll be plugging the Arduino Nano into your HA server via USB. If it's the only USB-to-Serial device attached, it will show up as /dev/ttyUSB0
-If you have more USB serial devices attached, it could be ttyUSB1, etc. You can check this in your HomeAssistant's Hardware Page.
+If you have more USB-to-serial devices attached, it could be ttyUSB1, etc. You can check this in your HomeAssistant's Hardware Page.
 [http://your-ha-ip:8123/hassio/system](http://your-ha-ip:8123/hassio/system)
 
 Then click the '⋮' icon, and then 'Hardware'
 
 I'll assume you're using /dev/ttyUSB0 for the example configuration.
 
-These changes are done inside the HA configuration.yaml file.
+The following config is done inside the HA configuration.yaml file.
 Note: Whilst my HA configuration files (yaml) work fine for me, I'm sure the HA yaml gurus amongst you will be able to improve/optimise this configuration significantly.
 Please feel free to contribute any improvements and optimisations to these HA configuration files if this is your thing.
 
 First, we'll adjust the recorder. The heartbeat of the bridge updates every 20 seconds or so. It does not seem logical to have HomeAssistant record the history of the heartbeat. We can disable entity recording by adding this:
 
+ ```yaml
 recorder:
   exclude:
     entity_globs: 
       - sensor.fireangeldata   
+ ```
 
-
-The input from the bridge is built from a sensor template. This takes the serial data and makes individual sensors out of it, which we can use inside HA.
+The input from the bridge is read by a sensor template. This takes the serial data and makes individual sensors out of it, which we can use inside HA.
 
 Here we create the sensor template, with 'heartbeat' and 'messages'.
 Below the 'messages' section, I've included 3 example alarms; Smoke, Heat and CO.
@@ -505,35 +508,9 @@ Here's my lovelace configuration. In case you want to borrow anything from it:
         icon: mdi:volume-off
         show_state: false
         icon_height: 50px
-  - title: Bedroom
-    path: bedroom
-    badges: []
-    cards:
-      - type: button
-        tap_action:
-          action: toggle
-        entity: switch.wardrobe_light_power
-        icon: hass:lightbulb
-      - type: button
-        tap_action:
-          action: toggle
-        entity: switch.wardrobe_light_brighter
-        icon: hass:brightness-5
-      - type: button
-        tap_action:
-          action: toggle
-        entity: switch.wardrobe_light_dimmer
-        icon: hass:brightness-4
-      - type: button
-        tap_action:
-          action: toggle
-        entity: switch.main_light_power
-        icon: hass:lightbulb
-      - type: media-control
-        entity: media_player.bedroom_speaker
  ```
 
-At this point, you probably want to make sure that you at least an entities card on your dashboard called 'Gateway Information' and include: 
+At this point, you probably want to make sure that you at least configure an entities card on your dashboard called 'Gateway Information' and include: 
 * sensor.fireangel_radio_heartbeat 
 * sensor.fireangel_radio_messages
 * sensor.fireangeldata
