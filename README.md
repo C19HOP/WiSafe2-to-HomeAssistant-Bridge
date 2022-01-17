@@ -176,9 +176,9 @@ You'll be plugging the Arduino Nano into your HA server via USB. If it's the onl
 If you have more USB serial devices attached, it could be ttyUSB1, etc. You can check this in your HomeAssistant's Hardware Page.
 [http://your-ha-ip:8123/hassio/system](http://your-ha-ip:8123/hassio/system)
 
-Then click the ⋮ > Hardware
+Then click the '⋮' icon, and then 'Hardware'
 
-I'll assume /dev/ttyUSB0 for the example configuration.
+I'll assume you're using /dev/ttyUSB0 for the example configuration.
 
 These changes are done inside the HA configuration.yaml file.
 Note: Whilst my HA configuration files (yaml) work fine for me, I'm sure the HA yaml gurus amongst you will be able to improve/optimise this configuration significantly.
