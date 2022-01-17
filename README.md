@@ -7,7 +7,10 @@ As part of my testing, I removed all the alarms at once, and it didn't notice!
 Pressing 'test' in the App still reported all alarms 'online'. 
 In fact, after leaving the gateway completely unplugged for almost a year, the FireAngel app still says one alarm is online, and shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Everything is OK”.
 
-So when you consider the safety and reliability of a DIY aproach, just remember the commercial alternative; FireAngel have set the bar very, very low with their official offering.
+![App after 9 months offline](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/FireAngelProConnectedGateway/FireAngelApp.png)
+
+So when you consider the safety and reliability of a DIY approach, just remember the commercial alternative; FireAngel have set the bar very, very low with their official offering.
+Please, please, please, do not buy the FireAngel Connected Gateway!
 
 After being bitterly disappointed with the FireAngel Gateway (and not minding if I destroyed it), my next step was to attached it to a debugger, to see exactly what it was doing (with the mindset of intercepting its comms to create a local HA integration).
 I could see some JSON state changes being sent to AWS. But I found the messages were very slow to report, and even worse was that it stopped updating locally if the internet connection went down. So in the end, I decided to forget the gateway, and instead, build my own bridge from a donor radio module.
@@ -18,11 +21,11 @@ If you're interested in the debug log I trapped from the gateway, you can check 
 
 [GitHub - FireAngelProConnectedGateway](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
 
-Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered useing a generic 868MHz transiver to intercept the comms. But the data over-the-air is encrypted and and the specification is not documented for the public anyway.
-So rather than trying to simulate a FireAngel radio, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge.
+Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered using a generic 868MHz transceiver to intercept the comms. But I didn't find one for a good price. Plus, the data over-the-air is encrypted and and the specification is not documented for the public anyway.
+So rather than trying to listen directly to the network, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge. Letting the genuine radio module deal with the encryption and network pairing.
 
-With the radio on the bench, I used PulseView to trap the communication and reverse-engineered everything that I could figure out. 
-Check here if you're interested in the communication specification. Maybe you have some inside knowlege and can add more detail to it?
+With the radio on the bench, I used PulseView to intercept and analyse the communication between the radio and an alarm. I reverse-engineered everything that I could figure out. 
+Check here if you're interested in the communication specification. Maybe you have some inside knowledge and can add more detail to it? Or would like to investigate the concept of using a generic 868MHz transceiver further...
 
 [GitHub - WiSafeCommunicationAnalysis](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/WiSafeCommunicationAnalysis)
 
@@ -33,9 +36,9 @@ Check here if you're interested in the communication specification. Maybe you ha
 
 
 I'll explain how I used a WiSafe2 radio module, along with an Arduino Nano, to bridge my network of FireAngel WiSafe2 alarms into HomeAssistant.
-Using this method, all communication is local (unlike the FireAngel Connected Gateway product, which pushes states to AWS).
+Using this method, all communication is local (unlike the FireAngel Connected Gateway product, which pushes states to AWS - sometimes).
 
-This WiSafe2-to-HA Bridge should work with any WiSafe2 alarm. But it has been specifically tested with the alarms I have, which are:
+This WiSafe2-to-HA Bridge should work with any WiSafe2 alarm. But it has only been tested with the devices I actually have, which are:
 * FP2620W2
 * FP1720W2-R
 * WST-630
@@ -82,7 +85,7 @@ To build the WiSafe2-to-HA Bridge, you'll need:
 ## Obtaining the parts
 The WiSafe2 radio modules can be obtained from:
 * Any old alarm. Perhaps you can find one which has expired, or has gone faulty.
-* The W2-SVP-630 strobe units can regually be found for sale on ebay and are otherwise worthless 2nd-hand... I picked mine up for £5 :)
+* The W2-SVP-630 strobe units can regularly be found for sale on ebay and are otherwise worthless 2nd-hand... I picked mine up for £5 :)
 * The radio can be bought as a stand-alone module. But expect to over-pay if buying it new.
 
 The Arduino Nano:
@@ -104,7 +107,7 @@ Level Converter:
 You need 2x 4ch level converters. Just search ebay for "4ch Logic Level Shifter Converter Module 5V to 3.3V"
 
 2.54mm jumper:
-Rummage through your drawerers. There's definately one in there somewhere!
+Rummage through your drawers. There's definitely one in there somewhere!
 
 2.54mm male header:
 Search ebay for 2.54mm male header. You only need 2 pins, for attaching the jumper to.
@@ -135,7 +138,7 @@ The only library dependency is the SPI library, which should be installed into t
 If you encounter any trouble uploading the sketch, try setting the processor to ATmega328P (old bootloader). I found is nearly always required if using an Arduino Nano 'compatible'.
 ![Enclosure-Closed](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Arduino/Nano%20bootloader.png)
 
-When you're ready to solder all the components to the PCB, you should find the layout is self-explainitory. The PCB silk-screen shows the correct way to insert the level converters and the Arduino Nano.
+When you're ready to solder all the components to the PCB, you should find the layout is self-explanatory. The PCB silk-screen shows the correct way to insert the level converters and the Arduino Nano.
 The WiSafe2 radio can only be soldered in one way.
 
 Note: Radio modules from alarms have a backup battery. Whereas the modules from the Strobe (plug-in) units don't. If your radio has a battery, I recommend removing it. This ensures the Arduino will initialise the radio from a cold-start if the power is ever cycled.
@@ -145,7 +148,7 @@ Removing the battery is also required if you want to use the 3D-printed enclosur
 ## Configuring the hardware
 There is a jumper which toggles the driver mode. For normal operation with HomeAssistant, the jumper should be on.
 
-If you want to receive raw wi-safe2 hex data from the alarm network, for the purpose of further development (to add support for other alarms or functions, etc. Or to use this bridge with something other than HA) then you can remove the jumper. After this, the bridge driver will send/receive raw hex data, instead of JSON formatted messages / preset CMDs. 
+If you want to receive raw WiSafe2 hex data from the alarm network, for the purpose of further development (to add support for other alarms or functions, etc. Or to use this bridge with something other than HA) then you can remove the jumper. After this, the bridge driver will send/receive raw hex data, instead of JSON formatted messages / preset CMDs. 
 
 
 # Setting up in HomeAssistant
