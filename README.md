@@ -1,16 +1,19 @@
-## Background
-Like some others, I have expired Google Nest Protects, which I wanted to replace with a cheaper / scalable alternative, but above all, I also wanted to realise a trustworthy alarm system, which can integrate with HomeAssistant.
+## Project Background
+Like some others, I have some expired Google Nest Protects, which I wanted to replace with a cheaper / more-scalable alternative. But above all, I wanted to realise a trustworthy fire/CO alarm system, which ia integrates with HomeAssistant.
 
 In persuit of this, I initially purchased the FireAngel Pro Connected Gateway, but found it to be a dreadfully unreliable piece of kit.
-I removed all the alarms at once, and it didn't notice! Pressing 'test' still reported all alarms 'online'. 
+As part of my testing, I removed all the alarms at once, and it didn't notice! 
+
+Pressing 'test' in the App still reported all alarms 'online'. 
 In fact, after leaving the gateway completely unplugged for almost a year, the FireAngel app still says one alarm is online, and shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Everything is OK”.
-So when you consider the safety and reliability of a DIY aproach, just remember, FireAngel have set the bar very low with their commercial 'smart' product offering.
 
-My next step, after being bitterly disappointed with the gateway (and not minding if I destroyed it), was to attached it to a debugger, to see exactly what it was doing (with the mindset of intercepting its comms to create a local HA integration).
-I could see all the JSON state changes being sent to AWS. But I found the messages were slow and that that it stopped updating locally if the internet connection went down. So in the end, I decided to build my own bridge from a donor radio module.
+So when you consider the safety and reliability of a DIY aproach, just remember the commercial alternative; FireAngel have set the bar very, very low with their official offering.
 
-You can check here if you're interested in the debug log I trapped from the gateway.
-todo: link
+After being bitterly disappointed with the FireAngel Gateway (and not minding if I destroyed it), my next step was to attached it to a debugger, to see exactly what it was doing (with the mindset of intercepting its comms to create a local HA integration).
+I could see some JSON state changes being sent to AWS. But I found the messages were very slow to report, and even worse was that it stopped updating locally if the internet connection went down. So in the end, I decided to forget the gateway, and instead, build my own bridge from a donor radio module.
+
+If you're interested in the debug log I trapped from the gateway, you can check it out here
+[GitHub - FireAngelProConnectedGateway] (https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
 
 The WiSafe2 radios uses an 868MHz radio. I considered useing a generic 868MHz transiver to intercept the comms. But the data over the air is encrypted and and the specification is not documented for the public anyway.
 So rather than trying to simulate a FireAngel radio, I looked at a radio module and noted that it uses SPI to communicate with the alarm board. The path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge.
