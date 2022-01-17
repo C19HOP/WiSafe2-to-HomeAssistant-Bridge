@@ -107,11 +107,10 @@ The WiSafe2 radio modules can be obtained from:
 * The W2-SVP-630 strobe units can regularly be found for sale on ebay and are otherwise worthless 2nd-hand... I picked mine up for £5 :)
 * The radio can be bought as a stand-alone module. But expect to over-pay if buying it new.
 
-The Arduino Nano:
-Just a regular Arduino Nano (or clone). Make sure it is 5v @ 16MHz.
+### The Arduino Nano
+Just use a regular Arduino Nano (or clone). Make sure it is 5v @ 16MHz.
 
 ### PCB
-
 Here's a link to the PCB I made for this:
 * [JSON file (for loading into easy-EDA):](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/WiSafe2HA-bridge-PCB.json)
 * [Gerber files (for ordering direct from JLCPCB, etc):](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/Gerber_EASYEDA-WiSafe2HA-bridge-PCB.zip)
@@ -146,6 +145,7 @@ I built this bridge using an Arduino Nano, as opposed to an ESP8266 because:
 
 # Building the project
 Program the Arduino Nano, using the sketch code provided. You shouldn't need to change anything.
+
 [Arduino Sketch](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Arduino/FireAngelNano.ino)
 
 Although there are some variables declared for the 'EMBEDDED DEVICE ID' and 'MODEL', which you can change if you like. Basically, the radio thinks it's connected to an alarm. The parameters we set here define the type of alarm that the Nano will simulate.
