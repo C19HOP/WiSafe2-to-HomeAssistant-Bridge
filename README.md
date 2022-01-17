@@ -25,7 +25,7 @@ And if you're interested in the debug log I trapped from my gateway, you can che
 
 [GitHub - FireAngel Pro Connected Gateway debug investigation](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
 
-## The FireAngel Gateway is bad. What next?
+## The FireAngel Gateway is bad. OK, well what next?
 
 Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered using a generic 868MHz transceiver to intercept the comms. But I didn't find one for a good price. Plus, the data over-the-air is encrypted and and the specification is not documented for the public anyway.
 So rather than trying to communicate with the WiSafe2 network from an unsupported radio, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge. Letting the genuine radio module deal with the encryption and network pairing.
@@ -35,17 +35,15 @@ Check here if you're interested in the communication specification. Maybe you ha
 
 [GitHub - WiSafeCommunicationAnalysis](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/WiSafeCommunicationAnalysis)
 
-When building this, I considered the safety and reliability of a DIY approach. As should you.
-The primary function of the alarms is to work as designed locally, and the 'smart' connection is just a 'nice-to-have'. This solution does not modify the alarms, but it is of course provided without any warranty, support. And I am not responsible if anything doesn't work the way you expected it to.
+At this point, I considered the safety and reliability of a DIY approach. As should you.
+The primary function of the alarms is to work as designed locally, and the 'smart' connection is always just a 'nice-to-have'. This solution does not modify the alarms, but it is of course provided without any warranty or support. And I am not responsible if you damage anything, or if doesn't work the way you expected it to.
 That said, with FireAngel's commercial solution being such a disaster, they have set the bar very low.
 
-With this solution, if it's all working properly, you'll have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's solution doesn't offer. Yes; all alarms beep. But they don't tell you where the problem is.
+With this solution, if it's all working properly, you'll have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's solution doesn't offer. Yes; all the alarms beep. But they don't tell you where the problem originated from.
 
 
 
-
-
-## About The Project
+## About This Project
 
 ![HA LoveLace](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA-lovelace.png)
 
