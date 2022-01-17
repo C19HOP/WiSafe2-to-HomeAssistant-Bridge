@@ -35,6 +35,8 @@ Check here if you're interested in the communication specification. Maybe you ha
 
 [GitHub - WiSafeCommunicationAnalysis](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/WiSafeCommunicationAnalysis)
 
+![On the bench](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/reverse-engineering%20wi-safe2%20radio%202.jpg)
+
 At this point, I considered the safety and reliability of a DIY approach. As should you.
 The primary function of the alarms is to work as designed locally, and the 'smart' connection is always just a 'nice-to-have'. This solution does not modify the alarms, but it is of course provided without any warranty or support. And I am not responsible if you damage anything, or if doesn't work the way you expected it to.
 That said, with FireAngel's commercial solution being such a disaster, they have set the bar very low.
