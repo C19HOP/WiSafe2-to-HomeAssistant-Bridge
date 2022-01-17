@@ -72,7 +72,7 @@ With this project, via Home Assistant, I am able to receive notifications when:
   * CO
 * An alarm is removed from / attached to its base
 * An alarm's battery is running low
-* The other alarms are complaining about a paired but missing device (I don't do anything with that info)
+* The other alarms are complaining about a paired but missing device
 
 I can also send data back to the network, including:
 * Perform a Fire Test
