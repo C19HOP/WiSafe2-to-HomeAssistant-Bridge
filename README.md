@@ -1,23 +1,31 @@
+# WiSafe2-to-HA Bridge readme
+
 ## Project Background
 Like some others, I have some expired Google Nest Protects, which I wanted to replace with a cheaper / more-scalable alternative. But above all, I wanted to realise a trustworthy fire/CO alarm system, which integrates with HomeAssistant.
 
-In pursuit of this, I initially purchased the FireAngel Pro Connected Gateway, but found it to be a dreadfully unreliable piece of kit.
+In pursuit of this, I initially purchased the FireAngel Pro Connected Gateway, but found it to be a dreadfully unreliable piece of kit. In the end, I lost all faith in the Gateway and instead, I decided to build my own bridge from a donor radio module.
+
+## What was so bad about the FireAngel Gateway, and what I learnt by tinkering with it
 As part of my testing, I removed all the alarms at once, and it didn't notice! 
 
 Pressing 'test' in the App still reported all alarms 'online'. 
-In fact, after leaving the gateway completely unplugged for almost a year, the FireAngel app still says one alarm is online, and shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Everything is OK”.
+In fact, after leaving the gateway completely unplugged for almost a year, the FireAngel app still says one alarm is online, and shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Everything is OK!?!”.
 
 ![App after 9 months offline](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/FireAngelProConnectedGateway/FireAngelApp.png)
 
-
 So after being bitterly disappointed with the FireAngel Gateway (and not minding if I destroyed it), my next step was to attached it to a debugger, to see exactly what it was doing (with the mindset of intercepting its comms to create a local HA integration).
-I could see some JSON state changes being sent to AWS. But I found the messages were very slow to report, and even worse was that it stopped updating locally if the internet connection went down. So in the end, I decided to forget the gateway, and instead, build my own bridge from a donor radio module.
+I could see some JSON state changes being sent to AWS. But I found the messages were very slow to report, and even worse was that it stopped updating locally if the internet connection went down. 
 
+
+If you want to attach a serial debug logger to the Gateway, use a 3.3v USB-to-serial adapter, and attach GND-to-GND and TX-to-RX
+ 
 ![Gateway Debug Pins](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/FireAngelProConnectedGateway/Gateway_debug_02.jpg)
 
-If you're interested in the debug log I trapped from the gateway, you can check it out here:
+And if you're interested in the debug log I trapped from my gateway, you can check it out here:
 
-[GitHub - FireAngelProConnectedGateway](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
+[GitHub - FireAngel Pro Connected Gateway debug investigation](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
+
+## What next
 
 Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered using a generic 868MHz transceiver to intercept the comms. But I didn't find one for a good price. Plus, the data over-the-air is encrypted and and the specification is not documented for the public anyway.
 So rather than trying to listen directly to the network, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge. Letting the genuine radio module deal with the encryption and network pairing.
@@ -32,6 +40,9 @@ The primary function of the alarms is to work as designed locally, and the 'smar
 That said, with FireAngel's commercial solution being such a disaster, they have set the bar very low.
 
 With this solution, if it's all working properly, you'll have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's solution doesn't offer. Yes; all alarms beep. But they don't tell you where the problem is.
+
+
+
 
 
 ## About The Project
