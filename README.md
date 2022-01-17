@@ -5,7 +5,7 @@ Like some others, I have some expired Google Nest Protects, which I wanted to re
 
 In pursuit of this, I initially purchased the FireAngel Pro Connected Gateway, but found it to be a dreadfully unreliable piece of kit. In the end, I lost all faith in the Gateway and instead, I decided to build my own bridge from a donor radio module.
 
-## What was so bad about the FireAngel Gateway, and what I learnt by tinkering with it
+## Rant about the FireAngel Pro Connected Gateway
 As part of my testing, I removed all the alarms at once, and it didn't notice! 
 
 Pressing 'test' in the App still reported all alarms 'online'. 
@@ -25,7 +25,7 @@ And if you're interested in the debug log I trapped from my gateway, you can che
 
 [GitHub - FireAngel Pro Connected Gateway debug investigation](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
 
-## The FireAngel Gateway is bad. OK, well what next?
+## OK. The FireAngel Gateway is bad. What next?
 
 Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered using a generic 868MHz transceiver to intercept the comms. But I didn't find one for a good price. Plus, the data over-the-air is encrypted and and the specification is not documented for the public anyway.
 So rather than trying to communicate with the WiSafe2 network from an unsupported radio, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge. Letting the genuine radio module deal with the encryption and network pairing.
@@ -42,7 +42,7 @@ Once I'd figured all the important parts of the communication out, I built a dri
 ![Prototype](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/my%20gateway.jpg)
 
 
-## About This Project
+## The alternative (This Project)
 
 ![HA LoveLace](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA-lovelace.png)
 
@@ -50,7 +50,7 @@ At this point, I considered the safety and reliability of a DIY approach. As sho
 The primary function of the alarms is to work as designed locally, and the 'smart' connection is always just a 'nice-to-have'. This solution does not modify the alarms, but it is of course provided without any warranty or support. And I am not responsible if you damage anything, or if doesn't work the way you expected it to.
 That said, with FireAngel's commercial solution being such a disaster, they have set the bar very low (last rant about the gateway, I promise).
 
-With this solution, if it's all working properly, you'll have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's solution doesn't offer. Yes; all the alarms beep. But they don't tell you where the problem originated from.
+With this WiSafe-to-HA Bridge solution, if it's all working properly, you'll have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's solution doesn't offer. Yes; all the alarms beep. But they don't tell you where the problem originated from.
 
 I'll explain how I used a WiSafe2 radio module, along with an Arduino Nano, to bridge my network of FireAngel WiSafe2 alarms into HomeAssistant.
 Using this method, the alarms are all unmodified and all communication is local.
@@ -85,7 +85,8 @@ The bridge also produces a heart-beat, so we can be confident that it is communi
 I highly recommend that you make sure your Home Assistant instance is configured to use Google Home / Amazon Alexa for TTS & that you have the Mobile Phone Companion App, working over the internet for phone notifications.
 
 ![HA Notification](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA%20App%20notifications.png)
-![HA TTS](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/ha-fireangel-googlehome.mp4)
+
+[Here's a video of my Google Home announcing an event](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/ha-fireangel-googlehome.mp4)
 
 
 ## Shopping List
@@ -100,6 +101,8 @@ To build the WiSafe2-to-HA Bridge, you'll need:
 
 
 ## Obtaining the parts
+
+### Radio
 The WiSafe2 radio modules can be obtained from:
 * Any old alarm. Perhaps you can find one which has expired, or has gone faulty.
 * The W2-SVP-630 strobe units can regularly be found for sale on ebay and are otherwise worthless 2nd-hand... I picked mine up for £5 :)
@@ -108,10 +111,7 @@ The WiSafe2 radio modules can be obtained from:
 The Arduino Nano:
 Just a regular Arduino Nano (or clone). Make sure it is 5v @ 16MHz.
 
-The PCB:
-
-![PCB design](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb01.png)
-![PCB board](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb02.png)
+### PCB
 
 Here's a link to the PCB I made for this:
 * [JSON file (for loading into easy-EDA):](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/WiSafe2HA-bridge-PCB.json)
@@ -120,18 +120,20 @@ Here's a link to the PCB I made for this:
 You can load the JSON into easyEDA and order some PCBs using the built-in JLCPCB ordering utility. It cost me a couple of USD, plus delivery.
 Or in case it's easier for you, you can use the Gerber files to place the order yourself. 
 
-Level Converter:
+![PCB design](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb01.png)
+
+### Level Converter
 You need 2x 4ch level converters. Just search ebay for "4ch Logic Level Shifter Converter Module 5V to 3.3V"
 
-2.54mm jumper:
+### 2.54mm jumper
 Rummage through your drawers. There's definitely one in there somewhere!
 
-2.54mm male header:
+### 2.54mm male header
 Search ebay for 2.54mm male header. You only need 2 pins, for attaching the jumper to.
 If this is a problem, you can always just bridge the contacts together with solder.
 
-Enclosure:
-Here's a link to the STL file for the enclosure I made.
+### Enclosure
+Here's a link to the STL file for the enclosure I made: [Enclosure](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Enclosure/WiSafe2-to-HA-Bridge-enclosure.stl)
 
 ![Enclosure-Open](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Enclosure/enclosure-open.jpg)
 ![Enclosure-Closed](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Enclosure/enclosure-closed.jpg)
@@ -143,7 +145,7 @@ I built this bridge using an Arduino Nano, as opposed to an ESP8266 because:
 * I needed to use SPI slave mode (the radio is designed to be the master)... The ESP8266 only supports SPI as a master
 
 
-## Building the project
+# Building the project
 Program the Arduino Nano, using the sketch code provided. You shouldn't need to change anything.
 [Arduino Sketch](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Arduino/FireAngelNano.ino)
 
@@ -158,17 +160,19 @@ If you encounter any trouble uploading the sketch, try setting the processor to 
 When you're ready to solder all the components to the PCB, you should find the layout is self-explanatory. The PCB silk-screen shows the correct way to insert the level converters and the Arduino Nano.
 The WiSafe2 radio can only be soldered in one way.
 
+![PCB board](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/pcb02.png)
+
 Note: Radio modules from alarms have a backup battery. Whereas the modules from the Strobe (plug-in) units don't. If your radio has a battery, I recommend removing it. This ensures the Arduino will initialise the radio from a cold-start if the power is ever cycled.
 Removing the battery is also required if you want to use the 3D-printed enclosure I provide.
 
 
-## Configuring the hardware
+# Configuring the hardware
 There is a jumper which toggles the driver mode. For normal operation with HomeAssistant, the jumper should be on.
 
 If you want to receive raw WiSafe2 hex data from the alarm network, for the purpose of further development (to add support for other alarms or functions, etc. Or to use this bridge with something other than HA) then you can remove the jumper. After this, the bridge driver will send/receive raw hex data, instead of JSON formatted messages / preset CMDs. 
 
 
-# Setting up in HomeAssistant
+# Setting the bridge up in HomeAssistant
 You'll be plugging the Arduino Nano into your HA server via USB. If it's the only USB-to-Serial device attached, it will show up as /dev/ttyUSB0
 If you have more USB serial devices attached, it could be ttyUSB1, etc. You can check this in your HomeAssistant's Hardware Page.
 [http://your-ha-ip:8123/hassio/system](http://your-ha-ip:8123/hassio/system)
@@ -552,13 +556,13 @@ If you find the network is already paired (because your radio module is 2nd hand
 See FireAngel's instructions for unpairing an alarm from the network.
 Use the 'Check Radio Pairing' dashboard button and observe the message to confirm that the radio is unpaired, then you can proceed to pair with your network as previously described.
 
-At this point, when you test any alarm in your network, sensor.fireangeldata will show you the ID of the alarm. Take this ID to create the sensors for each alarm, based on my sample configuration.
+At this point, when you test any alarm in your network, 'sensor.fireangeldata' will show you the ID of the alarm. Take this ID to create the sensors for each alarm, based on my sample configuration.
 Note: Use lower-case when using the ID in the HA configuration file.
 
 Add sensors for each of your alarms, and you're pretty much done.
 
-## Value Add
-For the full experiance, I recommend making sure you have TTS (Google/Alexa) and Mobile Phone notifications setup and working. I won't go into detail here, as this is just HA stuff, and not specific to this project. 
+# Value Add
+For the full experience, I recommend making sure you have TTS (Google/Alexa) and Mobile Phone notifications setup and working. I won't go into detail here, as this is just HA stuff, and not specific to this project. 
 But I'll quickly share the configuration I use for Google wavenet:
 
  ```yaml
