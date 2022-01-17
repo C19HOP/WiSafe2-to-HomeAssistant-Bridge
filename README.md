@@ -25,10 +25,10 @@ And if you're interested in the debug log I trapped from my gateway, you can che
 
 [GitHub - FireAngel Pro Connected Gateway debug investigation](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
 
-## What next
+## The FireAngel Gateway is bad. What next?
 
 Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered using a generic 868MHz transceiver to intercept the comms. But I didn't find one for a good price. Plus, the data over-the-air is encrypted and and the specification is not documented for the public anyway.
-So rather than trying to listen directly to the network, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge. Letting the genuine radio module deal with the encryption and network pairing.
+So rather than trying to communicate with the WiSafe2 network from an unsupported radio, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge. Letting the genuine radio module deal with the encryption and network pairing.
 
 With the radio on the bench, I used PulseView to intercept and analyse the communication between the radio and an alarm. I reverse-engineered everything that I could figure out. 
 Check here if you're interested in the communication specification. Maybe you have some inside knowledge and can add more detail to it? Or would like to investigate the concept of using a generic 868MHz transceiver further...
