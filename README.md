@@ -9,70 +9,72 @@ In pursuit of this, I initially purchased the FireAngel Pro Connected Gateway, b
 As part of my testing, I removed all the alarms at once, and it didn't notice! 
 
 Pressing 'test' in the App still reported all alarms 'online'. 
-In fact, after leaving the gateway completely unplugged for almost a year, the FireAngel app still says one alarm is online, and shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Everything is OK!?!”.
+In fact, after leaving the gateway completely unplugged for almost a year, today the FireAngel app still says one alarm is online, and shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Everything is OK!?!”.
 
 ![App after 9 months offline](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/FireAngelProConnectedGateway/FireAngelApp.png)
 
-So after being bitterly disappointed with the FireAngel Gateway (and not minding if I destroyed it), my next step was to attached it to a debugger, to see exactly what it was doing (with the mindset of intercepting its comms to create a local HA integration).
+So after being bitterly disappointed with the FireAngel Gateway (and not minding if I destroyed it), my next step was to attach it to a debugger, to see exactly what it was doing (with the mindset of intercepting its comms to create a local HA integration).
 I could see some JSON state changes being sent to AWS. But I found the messages were very slow to report, and even worse was that it stopped updating locally if the internet connection went down. 
 
 
-If you want to attach a serial debug logger to the Gateway, use a 3.3v USB-to-serial adapter, and attach GND-to-GND and TX-to-RX
+If you want to attach a serial debug logger to your Gateway, then you can use a 3.3v USB-to-serial adapter, and attach GND-to-GND and TX-to-RX
  
 ![Gateway Debug Pins](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/FireAngelProConnectedGateway/Gateway_debug_02.jpg)
 
-And if you're interested in the debug log I trapped from my gateway, you can check it out here:
+And if you're interested in seeing the debug log I trapped from my gateway, then you can check it out here:
 
 [GitHub - FireAngel Pro Connected Gateway debug investigation](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/FireAngelProConnectedGateway)
 
-## OK. The FireAngel Gateway is bad. What next?
+## OK. The FireAngel Gateway is bad. So what's next?
 
 Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered using a generic 868MHz transceiver to intercept the comms. But I didn't find one for a good price. Plus, the data over-the-air is encrypted and and the specification is not documented for the public anyway.
 So rather than trying to communicate with the WiSafe2 network from an unsupported radio, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge. Letting the genuine radio module deal with the encryption and network pairing.
 
-With the radio on the bench, I used PulseView to intercept and analyse the communication between the radio and an alarm. I reverse-engineered everything that I could figure out. 
-Check here if you're interested in the details of communication specification. Maybe you have some inside knowledge and can add more detail to it? Or would like to investigate the concept of using a generic 868MHz transceiver further...
+With the radio on the bench, I used PulseView to intercept and analyse the communication between the radio and an alarm. I reverse-engineered everything that I could figure out.
+Eventually, I had all the information I needed to start listening to and taking back to the radio module.
+
+If you're interested in the details of communication specification, then the link below shows what I recorded. Maybe you have some inside knowledge and can add more detail to it? Or would like to investigate the concept of using a generic 868MHz transceiver further...
 
 [GitHub - WiSafeCommunicationAnalysis](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/WiSafeCommunicationAnalysis)
 
 ![On the bench](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/reverse-engineering%20wi-safe2%20radio%202.jpg)
 
-Once I'd figured all the important parts of the communication out, I built a driver for the radio, to allow us to communicate with it over USB. 
+With the the communication sussed out, I then built a driver for the radio, to allow us to communicate with it over USB via an Arduino Nano. 
 
 ![Prototype](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/my%20gateway.jpg)
 
 
-## The alternative (This Project)
+## Birth of the WiSafe2-to-HA Bridge (This Project)
 
 ![HA LoveLace](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA-lovelace.png)
 
-At this point, I considered the safety and reliability of a DIY approach. As should you.
-The primary function of the alarms is to work as designed locally, and the 'smart' connection is always just a 'nice-to-have'. This solution does not modify the alarms, but it is of course provided without any warranty or support. And I am not responsible if you damage anything, or if doesn't work the way you expected it to.
+At this point, I considered the safety and reliability of a DIY approach... As should you!
+The primary function of the alarms is to work as designed locally, and the 'smart' connection is always just a 'nice-to-have'. 
+
+For me, that's why I chose a solution which extends the functionality on a known brand, but does not modify the actual alarms in any way. But this solution is of course shared without any warranty or support. And I am not responsible if you damage anything, or if doesn't work the way you expected it to.
 That said, with FireAngel's commercial solution being such a disaster, they have set the bar very low (last rant about the gateway, I promise).
 
-With this WiSafe-to-HA Bridge solution, if it's all working properly, you'll have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's solution doesn't offer. Yes; all the alarms beep. But they don't tell you where the problem originated from.
+With this WiSafe2-to-HA Bridge, if it's all configured properly in HomeAssistant, you'll have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's solution doesn't offer. Yes; all the alarms beep. But they don't tell you where the problem originated from.
 
-I'll explain how I used a WiSafe2 radio module, along with an Arduino Nano, to bridge my network of FireAngel WiSafe2 alarms into HomeAssistant.
-Using this method, the alarms are all unmodified and all communication is local.
+So if you're still reading, I'll explain how I used a WiSafe2 radio module, along with an Arduino Nano, to bridge my network of FireAngel WiSafe2 alarms into HomeAssistant.
 
 This WiSafe2-to-HA Bridge should work with any WiSafe2 alarm. But it has only been tested with the devices I actually have, which are:
 * FP2620W2
-* FP1720W2-R
+* FP1720W2
 * WST-630
 * W2-SVP-630
 * W2-CO-10X
 
-
 With this project, via Home Assistant, I am able to receive notifications when:
-* An alarm is tested (including type and result)
+* An alarm is tested (including the type and result)
   * heat, smoke, CO 
-  * OK/Not-OK
-* An emergency event occurs (and the type of event)
+  * OK / Not-OK
+* An emergency event occurs (including the type of event)
   * Fire
   * CO
 * An alarm is removed from / attached to its base
 * An alarm's battery is running low
-* The other alarms are complaining about a paired but missing device
+* The other alarms are complaining about a paired (but missing) device
 
 I can also send data back to the network, including:
 * Perform a Fire Test
@@ -137,9 +139,9 @@ Here's a link to the STL file for the enclosure I made: [Enclosure](https://gith
 ![Enclosure-Closed](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Enclosure/enclosure-closed.jpg)
 
 
-## More information
+## Why a Nano?
 I built this bridge using an Arduino Nano, as opposed to an ESP8266 because:
-* I liked the reliability of a direct USB connection (no dependency on wifi network)
+* I liked the reliability of a direct USB connection (no dependency on the wifi network)
 * I needed to use SPI slave mode (the radio is designed to be the master)... The ESP8266 only supports SPI as a master
 
 
@@ -163,19 +165,19 @@ The WiSafe2 radio can only be soldered in one way.
 
 The antenna is just a a wire connected to the 'ANT' pin. It should be cut to 17.27cm (1/2 wavelength), or 8.64cm (1/4 wavelength).
 
-Note: Radio modules from alarms have a backup battery. Whereas the modules from the Strobe (plug-in) units don't. If your radio has a battery, I recommend removing it. This ensures the Arduino will initialise the radio from a cold-start if the power is ever cycled.
+Note: Radio modules found in alarms have a backup battery. Whereas the modules from the Strobe units don't (as they are mains powered). If your radio has a battery, I recommend removing it. This ensures the Arduino will initialise the radio from a cold-start if the power is ever cycled.
 Removing the battery is also required if you want to use the 3D-printed enclosure I provide.
 
 
 # Configuring the hardware
-There is a jumper which toggles the driver mode. For normal operation with HomeAssistant, the jumper should be on.
+There is a jumper which toggles the driver mode. For normal operation with HomeAssistant, the jumper needs to be on.
 
-If you want to receive raw WiSafe2 hex data from the alarm network, for the purpose of further development (to add support for other alarms or functions, etc. Or to use this bridge with something other than HA) then you can remove the jumper. After this, the bridge driver will send/receive raw hex data, instead of JSON formatted messages / preset CMDs. 
+If you want to receive raw WiSafe2 hex data from the alarm network, for the purpose of further development (to add support for other alarms or new functions, etc. or to use this bridge with something other than HA) then you can remove the jumper. After removing the jumper, the bridge driver will send/receive raw hex data, instead of JSON formatted messages and preset CMDs. 
 
 
 # Setting the bridge up in HomeAssistant
 You'll be plugging the Arduino Nano into your HA server via USB. If it's the only USB-to-Serial device attached, it will show up as /dev/ttyUSB0
-If you have more USB-to-serial devices attached, it could be ttyUSB1, etc. You can check this in your HomeAssistant's Hardware Page.
+If you have more USB-to-serial devices attached, it could be /dev/ttyUSB1, etc. You can check this in your HomeAssistant's Hardware Page.
 [http://your-ha-ip:8123/hassio/system](http://your-ha-ip:8123/hassio/system)
 
 Then click the '⋮' icon, and then 'Hardware'
@@ -183,10 +185,10 @@ Then click the '⋮' icon, and then 'Hardware'
 I'll assume you're using /dev/ttyUSB0 for the example configuration.
 
 The following config is done inside the HA configuration.yaml file.
-Note: Whilst my HA configuration files (yaml) work fine for me, I'm sure the HA yaml gurus amongst you will be able to improve/optimise this configuration significantly.
-Please feel free to contribute any improvements and optimisations to these HA configuration files if this is your thing.
+Note: Whilst this HA configuration (yaml) works fine for me, I'm sure the HA yaml gurus amongst you will be able to improve/optimise this configuration significantly.
+Please feel free to contribute any improvements and optimisations to these HA configuration files if that's your thing.
 
-First, we'll adjust the recorder. The heartbeat of the bridge updates every 20 seconds or so. It does not seem logical to have HomeAssistant record the history of the heartbeat. We can disable entity recording by adding this:
+First, we'll adjust the recorder. The heartbeat of the bridge updates every 25 seconds or so. It does not seem logical to have HomeAssistant record the history of the heartbeat. We can disable entity recording by adding this:
 
  ```yaml
 recorder:
@@ -197,12 +199,12 @@ recorder:
 
 The input from the bridge is read by a sensor template. This takes the serial data and makes individual sensors out of it, which we can use inside HA.
 
-Here we create the sensor template, with 'heartbeat' and 'messages'.
-Below the 'messages' section, I've included 3 example alarms; Smoke, Heat and CO.
+Here we create the sensor template, with the first two sensors; 'heartbeat' and 'messages'.
+Below the 'messages' sensor, I've included 3 example alarms; Smoke, Heat and CO.
 Using these 3 examples, hopefully you can see how you could add as many alarms as you need to.
 
 We just give each alarm a name, so we can identify it in HA.
-And we set the ID of each alarm, so we can identify it from the WiSafe2 network (the id is the hex number). I'll explain how to get the IDs of your alarms shortley.
+And we set the ID of each alarm, so we can identify it from the WiSafe2 network (the id is the hex number, used several times in each sensor). I'll explain how to get the IDs of your alarms shortley.
 
  ```yaml
 #-------------------------
@@ -238,7 +240,7 @@ sensor:
           {% endif %}
           
       #-----------------------------------    
-      #2D8D01 | FP2620W2 | Smoke | Bedroom
+      #2d8d01 | FP2620W2 | Smoke | Bedroom
       #-----------------------------------  
       #EVENT
       fireangel_event_2d8d01: 
@@ -293,7 +295,7 @@ sensor:
           {% endif %}
           
       #-----------------------------------  
-      #A76F18 | FP1720W2-R | Heat | Kitchen
+      #a76f18 | FP1720W2-R | Heat | Kitchen
       #-----------------------------------  
       #EVENT
       fireangel_event_a76f18: 
@@ -348,7 +350,7 @@ sensor:
           {% endif %}
 
       #-----------------------------------  
-      #AD8003 | W2-CO-10X | CO | Kitchen
+      #ad8003 | W2-CO-10X | CO | Kitchen
       #-----------------------------------  
       #EVENT
       fireangel_event_ad8003: 
@@ -386,8 +388,7 @@ sensor:
  ```
 
 
-
-To talk back to the bridge, you can add this configuration:
+We can also send commands to the bridge to perform actions. To enable this, you can add this configuration:
 
  ```yaml
 #---------------------------------------------------------
@@ -406,9 +407,10 @@ shell_command:
  ```   
    
    
-Now you can start adding some entities to your dashboard.
+Now you can start adding some of those entities to your dashboard.
 
 Here's my lovelace configuration. In case you want to borrow anything from it:
+
  ```yaml
   - title: FireAngel
     path: fireangel
@@ -510,7 +512,7 @@ Here's my lovelace configuration. In case you want to borrow anything from it:
         icon_height: 50px
  ```
 
-At this point, you probably want to make sure that you at least configure an entities card on your dashboard called 'Gateway Information' and include: 
+At this point, you probably want to make sure that you at least configure an entities-card on your dashboard called 'Gateway Information' and include: 
 * sensor.fireangel_radio_heartbeat 
 * sensor.fireangel_radio_messages
 * sensor.fireangeldata
@@ -520,25 +522,28 @@ If it isn't working, check the USB connection and configuration.
 
 Next, add yourself some buttons for each of the shell commands you're interested in.
 The buttons just call services. e.g. service shell_command.fireangel_start_pairing
-Again, see my lovelace configuration for inspiration.
+Again, see my lovelace configuration if you need examples.
 
 Now you'll want to pair your bridge with your WiSafe network.
-Depending where you got your radio from, this may or may not be paired already. 
+Depending where you got your radio from, it may or may not be paired already. 
 
-If you used a new (or reset) radio, you can place the bridge into pairing mode, by pressing the button you created on the dashboard for pairing.
+If you used a new (or reset) radio, you can place the bridge into pairing mode, by pressing the button you created on the dashboard for pairing (fireangel_start_pairing).
 Once in pairing mode, press the physical button one one of your alarms (as normal). The messages sensor will show the result.
 
 If you find the network is already paired (because your radio module is 2nd hand), then you should reset it with a double push of the physical button on the back of the radio.
-See FireAngel's instructions for unpairing an alarm from the network.
-Use the 'Check Radio Pairing' dashboard button and observe the message to confirm that the radio is unpaired, then you can proceed to pair with your network as previously described.
+Google "FireAngel unlearn instructions" if you're not sure.
+Then, use the 'Check Radio Pairing' dashboard button and observe the message to confirm that the radio is unpaired. You can proceed to pair with your network via HomeAssistant, as previously described.
 
-At this point, when you test any alarm in your network, 'sensor.fireangeldata' will show you the ID of the alarm. Take this ID to create the sensors for each alarm, based on my sample configuration.
+At this point, when you test any alarm in your network, 'sensor.fireangeldata' will show a JSON string, which starts with the ID of the alarm. Take note of this ID to create the sensors you need for each alarm, based on my sample configuration.
+
+It should just be a case of taking my example, and using search/replace with your alarm ID.
+
 Note: Use lower-case when using the ID in the HA configuration file.
 
-Add sensors for each of your alarms, and you're pretty much done.
+After adding sensors for each of your alarms, and you're pretty much done.
 
 # Value Add
-For the full experience, I recommend making sure you have TTS (Google/Alexa) and Mobile Phone notifications setup and working. I won't go into detail here, as this is just HA stuff, and not specific to this project. 
+For the full experience, I recommend making sure you have TTS (Google/Alexa) and Mobile Phone notifications setup and working. I won't go into detail here, as this is just general HomeAssistant stuff, and not specific to this project. 
 But I'll quickly share the configuration I use for Google wavenet:
 
  ```yaml
@@ -563,8 +568,9 @@ notify:
       - service: mobile_app_iphone_2
  ```
 
-With that, I use these automations (automations.yaml) to trigger alerts and notifications:
-I receive notifications if the gateway goes offline, as well as any alarm events.
+With that, I use these automations (automations.yaml) to trigger alerts and notifications.
+
+I receive notifications if the gateway goes offline, as well as when any alarm event occurs.
 I also have the events configured as 'critical', so that my phone will make a sound, even if it is on silent.
 
  ```yaml
