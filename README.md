@@ -207,7 +207,7 @@ We just give each alarm a name, so we can identify it in HA.
 And we set the ID of each alarm, so we can identify it from the WiSafe2 network (the id is the hex number, used several times in each sensor). I'll explain how to get the IDs of your alarms shortly.
 
 At the end of this code-block, you'll see 'PSEUDO FIRMWARE ALARM'.
-This matches the 'Embedded Device ID', found in the Arduino Firmware. It's the ID the Arduino presents to the WiSafe2 network when it is performing a test or silcence command.
+This matches the 'Embedded Device ID', found in the Arduino Firmware. It's the ID the Arduino presents to the WiSafe2 network when it is performing a test or silence command.
 If you haven't changed the address in the Arduino firmware, then you can just leave it alone here too.
 
  ```yaml
