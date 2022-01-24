@@ -27,7 +27,7 @@ And if you're interested in seeing the debug log I trapped from my gateway, then
 
 ## OK. The FireAngel Gateway is bad. So what's next?
 
-Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered using a generic 868MHz transceiver to intercept the comms. But I didn't find one for a good price. Plus, the data over-the-air is encrypted and and the specification is not documented for the public anyway.
+Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered using a generic 868MHz transceiver to intercept the comms. But I didn't find one for a good price. Plus, the data over-the-air is encrypted and the specification is not documented for the public anyway.
 So rather than trying to communicate with the WiSafe2 network from an unsupported radio, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge. Letting the genuine radio module deal with the encryption and network pairing.
 
 With the radio on the bench, I used PulseView to intercept and analyse the communication between the radio and an alarm. I reverse-engineered everything that I could figure out.
@@ -155,7 +155,7 @@ This is used when we initiate a test from HA, or when the alarms are silenced.
 The information here just needs to be unique on your network. Chances are you can just leave it all alone.
 
 The only library dependency is the SPI library, which should be installed into the Arduino IDE by default.
-If you encounter any trouble uploading the sketch, try setting the processor to ATmega328P (old bootloader). I found is nearly always required if using an Arduino Nano 'compatible'.
+If you encounter any trouble uploading the sketch, try setting the processor to "ATmega328P (old bootloader)"; I found this is nearly always required if using an Arduino Nano 'compatible'.
 ![Enclosure-Closed](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Arduino/Nano%20bootloader.png)
 
 When you're ready to solder all the components to the PCB, you should find the layout is self-explanatory. The PCB silk-screen shows the correct way to insert the level converters and the Arduino Nano.
@@ -204,11 +204,15 @@ Below the 'messages' sensor, I've included 3 example alarms; Smoke, Heat and CO.
 Using these 3 examples, hopefully you can see how you could add as many alarms as you need to.
 
 We just give each alarm a name, so we can identify it in HA.
-And we set the ID of each alarm, so we can identify it from the WiSafe2 network (the id is the hex number, used several times in each sensor). I'll explain how to get the IDs of your alarms shortley.
+And we set the ID of each alarm, so we can identify it from the WiSafe2 network (the id is the hex number, used several times in each sensor). I'll explain how to get the IDs of your alarms shortly.
+
+At the end of this code-block, you'll see 'PSEUDO FIRMWARE ALARM'.
+This matches the 'Embedded Device ID', found in the Arduino Firmware. It's the ID the Arduino presents to the WiSafe2 network when it is performing a test or silcence command.
+If you haven't changed the address in the Arduino firmware, then you can just leave it alone here too.
 
  ```yaml
 #-------------------------
-#FireAngel template sensor
+#FireAngel Template Sensor
 #-------------------------
 sensor:
   - platform: serial
@@ -217,9 +221,11 @@ sensor:
     baudrate: 115200       
   - platform: template
     sensors:
-    
+	
+      #-------------------------
       #HeartBeat 
-      #Result is Online or Offline based on heartbeat changes!
+      #Sets state to Online / Offline, based on heartbeat messages
+	  #-------------------------
       fireangel_radio_heartbeat:
         friendly_name: 'HeartBeat'
         icon_template: mdi:heart-pulse
@@ -229,8 +235,11 @@ sensor:
           {% else %}
           Offline!
           {% endif %}
-
-      #Messages from the radio to the user
+		  
+      #-------------------------
+	  #Messages
+      #Handles messages from the radio to the user
+	  #-------------------------
       fireangel_radio_messages:
         friendly_name: 'Messages'
         icon_template: mdi:message-processing
@@ -240,7 +249,8 @@ sensor:
           {% endif %}
           
       #-----------------------------------    
-      #2d8d01 | FP2620W2 | Smoke | Bedroom
+      #2d8d01
+	  #Bedroom Smoke Alarm
       #-----------------------------------  
       #EVENT
       fireangel_event_2d8d01: 
@@ -295,7 +305,8 @@ sensor:
           {% endif %}
           
       #-----------------------------------  
-      #a76f18 | FP1720W2-R | Heat | Kitchen
+      #a76f18
+	  #Kitchen Heat Alarm
       #-----------------------------------  
       #EVENT
       fireangel_event_a76f18: 
@@ -350,7 +361,8 @@ sensor:
           {% endif %}
 
       #-----------------------------------  
-      #ad8003 | W2-CO-10X | CO | Kitchen
+      #ad8003
+	  #Kitchen CO Alarm
       #-----------------------------------  
       #EVENT
       fireangel_event_ad8003: 
@@ -385,6 +397,23 @@ sensor:
           {% else %}
           {{ states.sensor.fireangel_battery_ad8003.state }}
           {% endif %}   
+		  
+	  #-----------------------------------        
+      #a5b813
+	  #PSEUDO FIRMWARE ALARM
+	  #-----------------------------------     
+	  #Used when HomeAssistant sends out a message to the WiSafe2 network (such as test or silence).
+	  #This ID (a5b813) matches the default 'Device ID' configured in Arduino Firmware.
+	  #If you change the ID in the Arduino code, make sure it matches here.
+      #-----------------------------------  
+      #EVENT
+      fireangel_event_a5b813: 
+        unique_id: 'fireangel_event_a5b813'
+        friendly_name: 'Built in Test Function'
+        value_template: >
+          {% if states.sensor.fireangeldata.attributes.device=='a5b813'.upper() %}
+          {{ states.sensor.fireangeldata.attributes.event }}
+          {% endif %}      
  ```
 
 
