@@ -221,7 +221,7 @@ sensor:
     baudrate: 115200       
   - platform: template
     sensors:
-	
+
       #-------------------------
       #HeartBeat 
       #Sets state to Online / Offline, based on heartbeat messages
@@ -235,7 +235,7 @@ sensor:
           {% else %}
           Offline!
           {% endif %}
-		  
+
       #-------------------------
 	  #Messages
       #Handles messages from the radio to the user
@@ -397,7 +397,7 @@ sensor:
           {% else %}
           {{ states.sensor.fireangel_battery_ad8003.state }}
           {% endif %}   
-		  
+
 	  #-----------------------------------        
       #a5b813
 	  #PSEUDO FIRMWARE ALARM
