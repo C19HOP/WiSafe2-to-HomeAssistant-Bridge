@@ -10,7 +10,7 @@ What was so bad about the gateway?...
 
 As part of my initial testing, I removed all the alarms from my property, ran a test, and it didn't notice! 
 
-In fact, when I pressed the 'test' button in the App, it took a while to time-out and then reported that all my alarms were 'online'. 
+Specifically, when I pressed the 'test' button in the App, it took a while to time-out and then eventually reported that all my alarms were 'online'. 
 
 Even worse, after leaving the gateway completely unplugged for almost a year, the FireAngel App still tells me that one alarm is online. It also shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Risk is low!?!”.
 
