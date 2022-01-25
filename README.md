@@ -63,7 +63,7 @@ If you choose to build this (or any part of it) for yourself, then you do so at 
 
 ## The WiSafe2-to-HA Bridge
 
-Here's an explanation of I bridged my network of FireAngel WiSafe2 alarms into HomeAssistant, using a donor WiSafe2 radio module and an Arduino Nano.
+So here's the explanation of how I bridged my network of FireAngel WiSafe2 alarms into HomeAssistant, using a donor WiSafe2 radio module and an Arduino Nano.
 
 With this WiSafe2-to-HA Bridge, if it's all configured properly in HomeAssistant, you'll be able to have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's Gateway solution doesn't offer. Yes; all the alarms beep. But they don't speak where the problem originated from.
 
