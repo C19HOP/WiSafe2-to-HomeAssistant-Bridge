@@ -3,21 +3,24 @@
 ## Project Background
 Like some others, I have some expired Google Nest Protects, which I wanted to replace with a cheaper / more-scalable alternative. But above all, I wanted to realise a trustworthy fire/CO alarm system, which integrates with HomeAssistant.
 
-In pursuit of this, I initially purchased the FireAngel Pro Connected Gateway, but found it to be a dreadfully unreliable piece of kit. In the end, I lost all faith in the Gateway and instead, I decided to build my own bridge from a donor radio module.
+In pursuit of this, I initially purchased the FireAngel's commercial IoT solution; The 'Connected Gateway', but after a few basic tests, I found it to be a dreadfully unreliable piece of kit. In the end, I lost all faith in the Gateway and instead, I decided to build my own bridge from a donor radio module.
 
 ## Rant about the FireAngel Pro Connected Gateway
+What was so bad about the gateway?...
 As part of my testing, I removed all the alarms at once, and it didn't notice! 
 
-Pressing 'test' in the App still reported all alarms 'online'. 
-In fact, after leaving the gateway completely unplugged for almost a year, today the FireAngel app still says one alarm is online, and shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Everything is OK!?!”.
+When I pressed the 'test' button in the App, it still reported all alarms 'online'. 
+In fact, after leaving the gateway completely unplugged for almost a year, the FireAngel app still says one alarm is online, and shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Risk is low!?!”.
+
+I don't know what these "complex algorithms" are, but they did not work for me! Which I'm glad I found out from testing, before putting any faith in the solution.
 
 ![App after 9 months offline](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/FireAngelProConnectedGateway/FireAngelApp.png)
 
 So after being bitterly disappointed with the FireAngel Gateway (and not minding if I destroyed it), my next step was to attach it to a debugger, to see exactly what it was doing (with the mindset of intercepting its comms to create a local HA integration).
-I could see some JSON state changes being sent to AWS. But I found the messages were very slow to report, and even worse was that it stopped updating locally if the internet connection went down. 
+I could see some JSON state changes being sent to an AWS server in Frankfurt. But I found the messages were very slow to report, and even worse was that it stopped updating locally if the internet connection went down. 
 
 
-If you want to attach a serial debug logger to your Gateway, then you can use a 3.3v USB-to-serial adapter, and attach GND-to-GND and TX-to-RX
+If you want to attach a serial debug logger to a Gateway yourself, then you can use a 3.3v USB-to-serial adapter, and attach GND-to-GND and TX-to-RX
  
 ![Gateway Debug Pins](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/FireAngelProConnectedGateway/Gateway_debug_02.jpg)
 
@@ -30,33 +33,41 @@ And if you're interested in seeing the debug log I trapped from my gateway, then
 Thinking about how to capture the WiSafe2 data directly, without the FireAngel Connected Gateway, I considered using a generic 868MHz transceiver to intercept the comms. But I didn't find one for a good price. Plus, the data over-the-air is encrypted and the specification is not documented for the public anyway.
 So rather than trying to communicate with the WiSafe2 network from an unsupported radio, I looked at one of the radio modules from an alarm and noted that it uses SPI to communicate with the alarm board. For me, the path of least resistance was therefore to take a radio module as a donor and use it to build my own bridge. Letting the genuine radio module deal with the encryption and network pairing.
 
-With the radio on the bench, I used PulseView to intercept and analyse the communication between the radio and an alarm. I reverse-engineered everything that I could figure out.
-Eventually, I had all the information I needed to start listening to and taking back to the radio module.
+With the radio-module on the bench, I used PulseView to inspect the signals and monitor the communication between the radio-module and the alarm. 
+After spending some time testing different events and configurations , I eventually had all the information I needed to start taking to a radio-module myself.
 
-If you're interested in the details of communication specification, then the link below shows what I recorded. Maybe you have some inside knowledge and can add more detail to it? Or would like to investigate the concept of using a generic 868MHz transceiver further...
+If you're interested in the details of the SPI communication, then the link below shows what I observed:
 
 [GitHub - WiSafeCommunicationAnalysis](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/WiSafeCommunicationAnalysis)
 
-![On the bench](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/reverse-engineering%20wi-safe2%20radio%202.jpg)
+Here's the radio hooked up to a logic analyser:
 
-With the the communication sussed out, I then built a driver for the radio, to allow us to communicate with it over USB via an Arduino Nano. 
+![On the bench](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/reverse-engineering%20wi-safe2%20radio%202.jpg)
+![On the bench](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/WiSafeCommunicationAnalysis/PulseViewCaptures/example.png)
+
+With the the communication sussed out, the next thing was to build a driver for the radio, to allow Home Assistant to communicate with it over USB. This was done using an Arduino Nano. 
 
 ![Prototype](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/my%20gateway.jpg)
 
 
-## Birth of the WiSafe2-to-HA Bridge (This Project)
+## Stop!
+
+At this point, I paused to consider the safety and reliability of a DIY approach... As should you! Safety alarms are important devices and you should not do anything which isn't approved by the manufacturer. 
+The primary function of any safety alarm is to work as designed locally, and the 'smart' connection is always just a 'nice-to-have'. 
+
+For me, all I wanted was a solution which extended the functionality of 'off-the-shelf' devices; bringing them into HomeAssistant (locally), and without modifying the hardware of the alarms in any way. 
+However, before I explain how I bridged my network of FireAngel WiSafe2 alarms into HomeAssistant, you are warned that this explanation is shared purely as information. 
+To be clear, there is no warranty or support, and I am not responsible if you damage anything, or if doesn't work the way you expected it to. 
+If you choose to build this (or any part of it) for yourself, then you do so at your own risk.
+
+
+## The WiSafe2-to-HA Bridge
+
+Here's an explanation of I bridged my network of FireAngel WiSafe2 alarms into HomeAssistant, using a donor WiSafe2 radio module and an Arduino Nano.
+
+With this WiSafe2-to-HA Bridge, if it's all configured properly in HomeAssistant, you'll be able to have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's Gateway solution doesn't offer. Yes; all the alarms beep. But they don't speak where the problem originated from.
 
 ![HA LoveLace](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA-lovelace.png)
-
-At this point, I considered the safety and reliability of a DIY approach... As should you!
-The primary function of the alarms is to work as designed locally, and the 'smart' connection is always just a 'nice-to-have'. 
-
-For me, that's why I chose a solution which extends the functionality on a known brand, but does not modify the actual alarms in any way. But this solution is of course shared without any warranty or support. And I am not responsible if you damage anything, or if doesn't work the way you expected it to.
-That said, with FireAngel's commercial solution being such a disaster, they have set the bar very low (last rant about the gateway, I promise).
-
-With this WiSafe2-to-HA Bridge, if it's all configured properly in HomeAssistant, you'll have voice alerts in your home, telling you which room the emergency is in... Which is something FireAngel's solution doesn't offer. Yes; all the alarms beep. But they don't tell you where the problem originated from.
-
-So if you're still reading, I'll explain how I used a WiSafe2 radio module, along with an Arduino Nano, to bridge my network of FireAngel WiSafe2 alarms into HomeAssistant.
 
 This WiSafe2-to-HA Bridge should work with any WiSafe2 alarm. But it has only been tested with the devices I actually have, which are:
 * FP2620W2
@@ -86,7 +97,10 @@ The bridge also produces a heart-beat, so we can be confident that it is communi
 
 I highly recommend that you configure your Home Assistant instance to use Google Home / Amazon Alexa for TTS & that you have the Mobile Phone Companion App, working over the internet for remote phone notifications.
 
+Here's what the notifications look like on my phone:
 ![HA Notification](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/HA%20App%20notifications.png)
+
+And here's a video of the TTS notifications working through my Google Assistant speakers: 
 [![Video of my Google Home announcing an event](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/HA/ha-fireangel-googlehome.png)](https://youtu.be/Ph-9fv3ursU)
 
 
