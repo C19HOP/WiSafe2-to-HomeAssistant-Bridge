@@ -14,8 +14,7 @@ Specifically, when I pressed the 'test' button in the App, it took a while to ti
 
 Even worse, after leaving the gateway completely unplugged for almost a year, the FireAngel App still tells me that one alarm is online. It also shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Risk is low!?!”.
 
-I don't know what these "complex algorithms" are, but the fact that they've concluded "me and my family are safe" after being offline for 9 months did not give me much confidence. 
-
+I don't know what these "complex algorithms" are, but they are certainly not "real time"! The fact that they've concluded "me and my family are safe" after being offline for 9 months is very concerning.  
 I'm just glad I found this out from testing, before putting any faith in the solution.
 
 ![App after 9 months offline](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/FireAngelProConnectedGateway/FireAngelApp.png)
