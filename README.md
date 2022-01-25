@@ -3,16 +3,20 @@
 ## Project Background
 Like some others, I have some expired Google Nest Protects, which I wanted to replace with a cheaper / more-scalable alternative. But above all, I wanted to realise a trustworthy fire/CO alarm system, which integrates with HomeAssistant.
 
-In pursuit of this, I initially purchased the FireAngel's commercial IoT solution; The 'Connected Gateway', but after a few basic tests, I found it to be a dreadfully unreliable piece of kit. In the end, I lost all faith in the Gateway and instead, I decided to build my own bridge from a donor radio module.
+In pursuit of this, I initially purchased FireAngel's commercial IoT solution; The 'Connected Gateway', but after a few basic tests, I found it to be a dreadfully unreliable piece of kit. In the end, I lost all faith in the Gateway and instead, I decided to build my own bridge from a donor radio module.
 
 ## Rant about the FireAngel Pro Connected Gateway
 What was so bad about the gateway?...
-As part of my testing, I removed all the alarms at once, and it didn't notice! 
 
-When I pressed the 'test' button in the App, it still reported all alarms 'online'. 
-In fact, after leaving the gateway completely unplugged for almost a year, the FireAngel app still says one alarm is online, and shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Risk is low!?!”.
+As part of my initial testing, I removed all the alarms from my property, ran a test, and it didn't notice! 
 
-I don't know what these "complex algorithms" are, but they did not work for me! Which I'm glad I found out from testing, before putting any faith in the solution.
+In fact, when I pressed the 'test' button in the App, it took a while to time-out and then reported that all my alarms were 'online'. 
+
+Even worse, after leaving the gateway completely unplugged for almost a year, the FireAngel App still tells me that one alarm is online. It also shows some obnoxious message "Monitoring the risk to your home in real time using complex algorithms… Risk is low!?!”.
+
+I don't know what these "complex algorithms" are, but the fact that they've concluded "me and my family are safe" after being offline for 9 months did not give me much confidence. 
+
+I'm just glad I found this out from testing, before putting any faith in the solution.
 
 ![App after 9 months offline](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/FireAngelProConnectedGateway/FireAngelApp.png)
 
