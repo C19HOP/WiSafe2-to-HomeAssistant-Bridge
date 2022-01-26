@@ -591,7 +591,7 @@ Note: Use lower-case when using the ID in the HA configuration file.
 
 After adding your sensors and buttons, you're pretty much done.
 
-# Value Add
+## Value Add
 For the full experience, I recommend making sure you have TTS (Google/Alexa) and Mobile Phone notifications setup and working. I won't go into detail here, as this is just general HomeAssistant stuff, and not specific to this project. 
 But I'll quickly share the configuration I use for Google wavenet:
 
