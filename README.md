@@ -1,5 +1,11 @@
 # WiSafe2-to-HA Bridge readme
 
+## Quick Links
+- [Arduino Sketch](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Arduino/FireAngelNano.ino)
+- [Enclosure](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Enclosure/WiSafe2-to-HA-Bridge-enclosure.stl)
+- [PCB (easyEDA)](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/PCB/WiSafe2HA-bridge-PCB.json)
+- [HomeAssistant Configuration](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/tree/master/HA)
+
 ## Project Background
 Like some others, I have some expired Google Nest Protects, which I wanted to replace with a cheaper / more-scalable alternative. But above all, I wanted to realise a trustworthy fire/CO alarm system, which integrates with HomeAssistant.
 
@@ -21,7 +27,6 @@ I'm just glad I found this out from testing, before putting any faith in the sol
 
 So after being bitterly disappointed with the FireAngel Gateway (and not minding if I destroyed it), my next step was to attach it to a debugger, to see exactly what it was doing (with the mindset of intercepting its comms to create a local HA integration).
 I could see some JSON state changes being sent to an AWS server in Frankfurt. But I found the messages were very slow to report, and even worse was that it stopped updating locally if the internet connection went down. 
-
 
 If you want to attach a serial debug logger to a Gateway yourself, then you can use a 3.3v USB-to-serial adapter, and attach GND-to-GND and TX-to-RX
  
@@ -49,6 +54,11 @@ Here's the radio hooked up to a logic analyser:
 ![On the bench](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/WiSafeCommunicationAnalysis/PulseViewCaptures/example.png)
 
 With the the communication sussed out, the next thing was to build a driver for the radio, to allow Home Assistant to communicate with it over USB. This was done using an Arduino Nano. 
+
+## Why a Nano?
+I built this bridge using an Arduino Nano, as opposed to an ESP8266 because:
+* I liked the reliability of a simple, direct USB connection (no dependency on the wifi network)
+* I needed to use SPI slave mode (the radio is designed to be the master)... The ESP8266 Arduino libraries only support SPI as a master
 
 ![Prototype](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/my%20gateway.jpg)
 
@@ -93,7 +103,7 @@ With this project, via Home Assistant, I am able to receive notifications when:
 I can also send data back to the network, including:
 * Perform a Fire Test
 * Perform a CO Test
-* Silence an alarm (takes a moment to propergate through the network, just like pressing the actual silence button on a physical alarm)
+* Silence an alarm (takes a moment to propagate through the network, just like pressing the actual silence button on a physical alarm)
 
 And I can perform some basic configuration, like check and enable network pairing mode.
 The bridge also produces a heart-beat, so we can be confident that it is communicating with HA.
@@ -155,14 +165,7 @@ Here's a link to the STL file for the enclosure I made: [Enclosure](https://gith
 ![Enclosure-Open](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Enclosure/enclosure-open.jpg)
 ![Enclosure-Closed](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Enclosure/enclosure-closed.jpg)
 
-
-## Why a Nano?
-I built this bridge using an Arduino Nano, as opposed to an ESP8266 because:
-* I liked the reliability of a direct USB connection (no dependency on the wifi network)
-* I needed to use SPI slave mode (the radio is designed to be the master)... The ESP8266 only supports SPI as a master
-
-
-# Building the project
+## Building the project
 Program the Arduino Nano, using the sketch code provided. You shouldn't need to change anything.
 
 [Arduino Sketch](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Arduino/FireAngelNano.ino)
@@ -186,13 +189,13 @@ Note: Radio modules found in alarms have a backup battery. Whereas the modules f
 Removing the battery is also required if you want to use the 3D-printed enclosure I provide.
 
 
-# Configuring the hardware
+## Configuring the hardware
 There is a jumper which toggles the driver mode. For normal operation with HomeAssistant, the jumper needs to be on.
 
 If you want to receive raw WiSafe2 hex data from the alarm network, for the purpose of further development (to add support for other alarms or new functions, etc. or to use this bridge with something other than HA) then you can remove the jumper. After removing the jumper, the bridge driver will send/receive raw hex data, instead of JSON formatted messages and preset CMDs. 
 
 
-# Setting the bridge up in HomeAssistant
+## Setting the bridge up in HomeAssistant
 You'll be plugging the Arduino Nano into your HA server via USB. If it's the only USB-to-Serial device attached, it will show up as /dev/ttyUSB0
 If you have more USB-to-serial devices attached, it could be /dev/ttyUSB1, etc. You can check this in your HomeAssistant's Hardware Page.
 [http://your-ha-ip:8123/hassio/system](http://your-ha-ip:8123/hassio/system)
@@ -586,7 +589,7 @@ It should just be a case of taking my example, and using search/replace with you
 
 Note: Use lower-case when using the ID in the HA configuration file.
 
-After adding sensors for each of your alarms, and you're pretty much done.
+After adding your sensors and buttons, you're pretty much done.
 
 # Value Add
 For the full experience, I recommend making sure you have TTS (Google/Alexa) and Mobile Phone notifications setup and working. I won't go into detail here, as this is just general HomeAssistant stuff, and not specific to this project. 
