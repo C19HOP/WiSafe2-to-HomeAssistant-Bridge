@@ -186,7 +186,8 @@ The WiSafe2 radio can only be soldered in one way.
 
 The antenna is just a a wire connected to the 'ANT' pin. It should be cut to 17.27cm (1/2 wavelength), or 8.64cm (1/4 wavelength).
 
-Note: The WiSafe2 Radio modules found in alarms are powered by a built-in battery. Whereas the modules from the Strobe units are powered from the device. 
+### A note about battery powered radios
+The WiSafe2 Radio modules found in alarms are powered by a built-in battery. Whereas the modules from the Strobe units are powered from the device. 
 From what I have seen, radios with a red PCB are device-powered (without a battery) and radios with a black PCB are battery powered.
 
 Optional: If your radio has a battery, you can remove it and power the radio from the Arduino. Powered by the battery, the radio has a finite life, as the battery is not rechargeable, so better to remove the battery if you can. Removing the battery is also required if you want to use the 3D-printed enclosure I provide.
