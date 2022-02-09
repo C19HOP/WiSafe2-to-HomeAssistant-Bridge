@@ -17,7 +17,7 @@ int spiBufferIndex = 0;
 int spiBufferDumpCounter = 0;
 boolean radioReceiveBufferReady = false;
 boolean directMode = false;
-int maxInitAttempts = 120;                        //MAX number of attempts to Init Radio
+int maxInitAttempts = 50;                        //MAX number of attempts to Init Radio
 unsigned int heartBeatInterval = 25000;           // Heartbeat interval (in milliseconds)
 unsigned long lastHeartBeat = 0;
 int heartBeatValue = 0;
@@ -55,7 +55,7 @@ void setup()
   SPI.attachInterrupt();                                       //Interrupt ON
   Serial.begin(115200);
   directMode = digitalRead(directModePin);
-  delay(1000);
+  delay(5000);
   for (int i = 0; i <= maxInitAttempts; i++)
   {
     if (initRadio() == true) {
@@ -67,10 +67,10 @@ void setup()
         Serial.write(0x15);
         Serial.write(0x7E);
       } else {
-        Serial.println("INIT FAIL - CHECK RADIO!");
-        delay(60000);
-        resetFunc();
+        Serial.println("INIT FAIL | RESETTING");
       }
+        delay(10000);
+        resetFunc();
     }
   }
 }
@@ -87,9 +87,16 @@ ISR (SPI_STC_vect)
 
 boolean initRadio()
 {
-  byte cmdTemplate[] = {0xD3, 0x14, 0x8E, 0x7E};
+  //I don't have enough information to know the difference between init(1) and init(2)
+  //If you have trouble initialising the radio, you could try the other sequence.
+  
+  byte cmdTemplate[] = {0xD3, 0x19, 0x50, 0x00, 0x7E}; // init(1)
+  //byte cmdTemplate[] = {0xD3, 0x14, 0x8E, 0x7E}; // init(2)
+  
+
+  
   sendCMDToRadio(cmdTemplate, sizeof(cmdTemplate), true);
-  delay(1000);
+  delay(500);
   if ((spiBuffer[0] != (0x46)) && (spiBuffer[1] != (0x7E))) {
     Serial.print(".");
     return (false);

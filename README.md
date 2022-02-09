@@ -132,8 +132,8 @@ To build the WiSafe2-to-HA Bridge, you'll need:
 
 ### Radio
 The WiSafe2 radio modules can be obtained from:
-* Any old alarm. Perhaps you can find one which has expired, or has gone faulty.
 * The W2-SVP-630 strobe units can regularly be found for sale on ebay and are otherwise worthless 2nd-hand... I picked mine up for £5 :)
+* Any old alarm. Perhaps you can find one which has expired, or has gone faulty.
 * The radio can be bought as a stand-alone module. But expect to over-pay if buying it new.
 
 ### The Arduino Nano
@@ -176,6 +176,7 @@ The information here just needs to be unique on your network. Chances are you ca
 
 The only library dependency is the SPI library, which should be installed into the Arduino IDE by default.
 If you encounter any trouble uploading the sketch, try setting the processor to "ATmega328P (old bootloader)"; I found this is nearly always required if using an Arduino Nano 'compatible'.
+
 ![Enclosure-Closed](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/Arduino/Nano%20bootloader.png)
 
 When you're ready to solder all the components to the PCB, you should find the layout is self-explanatory. The PCB silk-screen shows the correct way to insert the level converters and the Arduino Nano.
@@ -185,9 +186,15 @@ The WiSafe2 radio can only be soldered in one way.
 
 The antenna is just a a wire connected to the 'ANT' pin. It should be cut to 17.27cm (1/2 wavelength), or 8.64cm (1/4 wavelength).
 
-Note: Radio modules found in alarms have a backup battery. Whereas the modules from the Strobe units don't (as they are mains powered). If your radio has a battery, I recommend removing it. This ensures the Arduino will initialise the radio from a cold-start if the power is ever cycled.
-Removing the battery is also required if you want to use the 3D-printed enclosure I provide.
+Note: The WiSafe2 Radio modules found in alarms are powered by a built-in battery. Whereas the modules from the Strobe units are powered from the device. 
+From what I have seen, radios with a red PCB are device-powered (without a battery) and radios with a black PCB are battery powered.
 
+Optional: If your radio has a battery, you can remove it and power the radio from the Arduino. Powered by the battery, the radio has a finite life, as the battery is not rechargeable, so better to remove the battery if you can. Removing the battery is also required if you want to use the 3D-printed enclosure I provide.
+
+If you do remove the battery from a radio which was originally battery powered, you'll need to bridge the 3.3v pin to the battery +ve terminal. See these images:
+
+![PCB board](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/battery-remove-bridge/battery-remove-bridge-1.jpg)
+![PCB board](https://github.com/C19HOP/WiSafe2-to-HomeAssistant-Bridge/blob/master/build/battery-remove-bridge/battery-remove-bridge-2.jpg)
 
 ## Configuring the hardware
 There is a jumper which toggles the driver mode. For normal operation with HomeAssistant, the jumper needs to be on.
