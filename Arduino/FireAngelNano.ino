@@ -47,6 +47,7 @@ void(* resetFunc) (void) = 0;                                 //Reset Arduino if
 
 void setup()
 {
+  delay(5000);                                                 //Allow radio stabilise first
   pinMode(IRQline, OUTPUT);
   pinMode(directModePin, INPUT_PULLUP);
   pinMode(MISO, OUTPUT);                                       //Sets MISO as OUTPUT
@@ -55,7 +56,7 @@ void setup()
   SPI.attachInterrupt();                                       //Interrupt ON
   Serial.begin(115200);
   directMode = digitalRead(directModePin);
-  delay(5000);
+ // delay(5000);
   for (int i = 0; i <= maxInitAttempts; i++)
   {
     if (initRadio() == true) {
@@ -67,9 +68,9 @@ void setup()
         Serial.write(0x15);
         Serial.write(0x7E);
       } else {
-        Serial.println("INIT FAIL | RESETTING");
+        Serial.println("Radio not ready - Trying to reset");
+        delay(500);  
       }
-        delay(10000);
         resetFunc();
     }
   }
@@ -87,14 +88,12 @@ ISR (SPI_STC_vect)
 
 boolean initRadio()
 {
-  //I don't have enough information to know the difference between init(1) and init(2)
-  //If you have trouble initialising the radio, you could try the other sequence.
-  
+
+  // I don't have enough information to know if init(1) or init(2) is best.
   byte cmdTemplate[] = {0xD3, 0x19, 0x50, 0x00, 0x7E}; // init(1)
   //byte cmdTemplate[] = {0xD3, 0x14, 0x8E, 0x7E}; // init(2)
   
-
-  
+   
   sendCMDToRadio(cmdTemplate, sizeof(cmdTemplate), true);
   delay(500);
   if ((spiBuffer[0] != (0x46)) && (spiBuffer[1] != (0x7E))) {
