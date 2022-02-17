@@ -47,7 +47,6 @@ void(* resetFunc) (void) = 0;                                 //Reset Arduino if
 
 void setup()
 {
-  //delay(5000);                                                 //Allow radio stabilise first
   pinMode(IRQline, OUTPUT);
   pinMode(directModePin, INPUT_PULLUP);
   pinMode(MISO, OUTPUT);                                       //Sets MISO as OUTPUT
@@ -56,10 +55,8 @@ void setup()
   SPI.attachInterrupt();                                       //Interrupt ON
   Serial.begin(115200);
   directMode = digitalRead(directModePin);
- 
-  delay(5000);                                                   //Allow radio stabilise first
+  delay(5000);                                                 //Allow radio stabilise first
   sendCMDToRadio(NULL, 0, true);
-     
   for (int i = 0; i <= maxInitAttempts; i++)
   {
     if (initRadio() == true) {
@@ -91,26 +88,33 @@ ISR (SPI_STC_vect)
 
 boolean initRadio()
 {
-
-  byte cmdTemplate[] = {0xD3, 0x19, 0x50, 0x00, 0x7E}; // init(1) - default
-  //byte cmdTemplate[] = {0xD3, 0x14, 0x8E, 0x7E}; // init(2) - alternative
+  byte cmdTemplate[] = {0xD3, 0x19, 0x50, 0x00, 0x7E}; // default init sequence
+  //byte cmdTemplate[] = {0xD3, 0x14, 0x8E, 0x7E}; // alternative  init sequence
   
   sendCMDToRadio(cmdTemplate, sizeof(cmdTemplate), true);
-  if (radioReceiveBufferReady == false)  {Serial.print(".");return (false);}
+  if (radioReceiveBufferReady == false)  {
+    Serial.print("No reply from radio. SPI Buffer= "); for(int i = 0; i < sizeof(spiBuffer); i++){Serial.print(spiBuffer[i],HEX);}Serial.println();    //  [debug] print raw response from radio
+  //Serial.print(".");
+    return (false);
+    }
   else
   {    
-    if (spiBuffer[0] == (0x46)) {
-      if (directMode == true) {
+    
+   // if (true == true) {   // [debug] bypass init-ok check
+  if (spiBuffer[0] == (0x46)) {
+    
+     if (directMode == true) {
         Serial.write(0x06);Serial.write(0x7E);
   } else {
-      Serial.println("INIT OK");
+      Serial.print("INIT OK. SPI Buffer= "); for(int i = 0; i < sizeof(spiBuffer); i++){Serial.print(spiBuffer[i],HEX);}Serial.println();    //  [debug] print raw response from radio
+    //Serial.println("INIT OK");
   }
   return (true);
     }
     else
     {
-   // for(int i = 0; i < sizeof(spiBuffer); i++){  Serial.print(spiBuffer[i],HEX);}Serial.println();    //  - debug - print response from radio
-  Serial.print("-");
+    Serial.print("Expected 467E, but got something else. SPI Buffer= "); for(int i = 0; i < sizeof(spiBuffer); i++){Serial.print(spiBuffer[i],HEX);}Serial.println();    //  [debug] print raw response from radio
+  //Serial.print("-");
   return (false);
     }
   }
