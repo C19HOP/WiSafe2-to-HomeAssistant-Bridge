@@ -1,5 +1,4 @@
 #include<SPI.h>
-//#include <ArduinoJson.h>
 
 #define IRQline 9
 #define directModePin 2
